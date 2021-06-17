@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+// HELPERS
+enum Role {
+  USER
+  ADMIN
+}
+
+model Tag {
+  @@map(name: "tag")
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  episodes    Episode[]
+}
+
+// MODELS
+// -- User Model
+model User {
+  @@map(name: "user")
+  id          Int      @id @default(autoincrement())
+  email       String   @db.VarChar(30) @unique
+  firstName   String   @db.VarChar(15)
+  lastName    String   @db.VarChar(15)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  role        Role     @default(USER)
+  planExpiry  DateTime?
+  isPaid      Boolean  @default(false)
+  favorites   Favorite[]
+}
+
+// -- Actors Model
+model Model {
+  @@map(name: "model")
+  id          Int     @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  episodes    Episode[]
+  thumbnail   String  @db.VarChar(20)
+}
+
+// -- Episode Model
+model Episode {
+  @@map(name: "episode")
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(30) @unique
+  info        String   @db.VarChar(500)
+  models      Model[]
+  duration    Int
+  thumbnail   String   @db.VarChar(20)
+  preview     String   @db.VarChar(20)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  tags        Tag[]
+  favorites   Favorite[]
+  favCount    Int      @default(0) 
+  views       Int      @default(0)
+  series      Series?  @relation(fields: [series_id], references: [id])
+  series_id   Int?
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+}
+
+// -- Series Model
+model Series {
+  @@map(name: "series")
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(30)
+  info        String   @db.VarChar(500)
+  thumbnail   String   @db.VarChar(20)
+  episodes    Episode[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+}
+
+// -- Favorites Model
+model Favorite {
+  @@map(name: "favorite")
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     Int
+  episode     Episode  @relation(fields: [episode_id], references: [id])
+  episode_id  Int
+}
