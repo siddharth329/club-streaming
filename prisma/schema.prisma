@@ -90,7 +90,7 @@ model Favorite {
   @@map(name: "favorite")
   id          Int      @id @default(autoincrement())
   user        User     @relation(fields: [user_id], references: [id])
-  user_id     Int
+  user_id     Int      
   episode     Episode  @relation(fields: [episode_id], references: [id])
   episode_id  Int
 }
