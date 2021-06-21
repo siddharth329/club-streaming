@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const createError = require('http-errors');
 const { query, param, validationResult, body } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
-const { model } = new PrismaClient();
+const { model,  } = new PrismaClient();
 
 const RESULTS_PER_PAGE = 12;
 
@@ -60,7 +60,7 @@ exports.validate = (method) => {
 exports.getAllModels = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 
@@ -88,7 +88,7 @@ exports.getAllModels = asyncHandler(async (req, res, next) => {
 exports.getModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 
@@ -118,7 +118,7 @@ exports.createModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	console.log(errors);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 
@@ -144,7 +144,7 @@ exports.updateModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	console.log(errors);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 
@@ -167,7 +167,7 @@ exports.deleteModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	console.log(errors);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 

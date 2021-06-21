@@ -83,7 +83,7 @@ exports.validate = (method) => {
 exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 
@@ -112,7 +112,7 @@ exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 exports.getEpisode = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 
@@ -136,7 +136,7 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	console.log(errors);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 
@@ -178,7 +178,7 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	console.log(errors);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
 	}
 
