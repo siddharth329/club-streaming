@@ -31,7 +31,8 @@ model User {
   @@map(name: "user")
   id          Int      @id @default(autoincrement())
   email       String   @db.VarChar(30) @unique
-  name        String   @db.VarChar(15)
+  password    String   @db.VarChar(70)
+  name        String   @db.VarChar(30)
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
@@ -102,6 +103,7 @@ model Favorite {
 enum TokenType {
   EMAIL_VERIFICATION
   FORGOT_PASSWORD
+  UNIQUE_UUID_LOGIN
 }
 
 model Token {

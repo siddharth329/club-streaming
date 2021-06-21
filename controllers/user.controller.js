@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const createError = require('http-errors');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { body, validationResult, query } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
 
@@ -13,6 +15,10 @@ exports.validate = (method) => {
 		case 'signup': {
 			return [
 				body('email', 'invalid email address').notEmpty().isEmail(),
+				body('password', 'password validation failed').matches(
+					/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/,
+					'i'
+				),
 				body('name', 'invalid user name')
 					.notEmpty()
 					.isLength({ min: 5, max: 20 })
@@ -21,10 +27,14 @@ exports.validate = (method) => {
 		}
 
 		case 'verifyEmail': {
-			return [ query('token', 'somethings wrong with token').isHexadecimal() ];
+			return [ query('token', 'somethings wrong with token').notEmpty().isHexadecimal() ];
 		}
 	}
 };
+
+//-------------------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//-------------------------------------------------------------
 
 /**
 * @api {post} /api/user Create user
@@ -47,17 +57,21 @@ exports.signup = asyncHandler(async (req, res, next) => {
 		return;
 	}
 
-	const { email, name } = req.body;
+	const { email, name, password } = req.body;
 
 	const userExists = await user.findUnique({ where: { email } });
 	if (userExists) {
 		return next(createError(403, 'user with this email already exists'));
 	}
 
+	const salt = await bcrypt.genSalt(10);
+	const hashedPassword = await bcrypt.hash(password, salt);
+
 	const newUser = await user.create({
 		data: {
 			email,
-			name
+			name,
+			password: hashedPassword
 		},
 		select: {
 			id: true,
@@ -73,7 +87,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
 
 	await token.create({
 		data: {
-			expiration: new Date(Date.now() + 900), // 15 minutes (900 secs) from now
+			expiration: new Date(Date.now() + 900000), // 15 minutes (900 secs) from now
 			type: 'EMAIL_VERIFICATION',
 			value: generatedToken,
 			user_id: newUser.id
@@ -97,6 +111,10 @@ exports.signup = asyncHandler(async (req, res, next) => {
 	res.status(201).json(newUser);
 });
 
+//-------------------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//-------------------------------------------------------------
+
 exports.verifyEmail = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -110,14 +128,82 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 		where: { value: userToken, type: 'EMAIL_VERIFICATION' }
 	});
 
-	if (!tokenData) {
+	// Send error if no token found or the token expired
+	if (!tokenData || tokenData.expiration.getTime() < new Date().getTime()) {
+		console.log(
+			tokenData.expiration.getTime(),
+			new Date().getTime(),
+			tokenData.expiration.getTime() < new Date().getTime()
+		);
 		return next(createError(400, 'Invalid token'));
 	}
 
-	await user.update({
-		where: { id: tokenData.id },
-		data: { verified: true }
-	});
+	await user.update({ where: { id: tokenData.user_id }, data: { verified: true } });
+
+	await token.delete({ where: { id: tokenData.id } });
 
 	res.status(200).json({ msg: 'Email verified successfully' });
 });
+
+//-------------------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//-------------------------------------------------------------
+
+exports.login = asyncHandler(async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+		return;
+	}
+
+	const { email, password } = req.body;
+
+	const userData = await user.findFirst({ where: { email } });
+
+	if (
+		!userData ||
+		!userData.verified ||
+		!userData.active ||
+		(await bcrypt.compare(password, userData.password))
+	) {
+		return next(createError(401, 'invalid email or password'));
+	}
+
+	const signedToken = await jwt.sign(
+		{ userId: userData.id },
+		process.env.JWT_AUTHORIZATION_SECRET,
+		{ expiresIn: '2d' }
+	);
+
+	res.cookie('token', signedToken, { maxAge: 172800 });
+
+	res.status(200).json({
+		id: userData.id,
+		email: userData.email,
+		name: userData.name,
+		isPaid: userData.isPaid,
+		planExpiry: userData.planExpiry,
+		role: userData.role,
+		token: signedToken
+	});
+});
+
+//-------------------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//-------------------------------------------------------------
+
+exports.logout = asyncHandler(async (req, res, next) => {
+	res.cookie('token', 'logged out', { maxAge: 10 });
+	res.status(200).json({ msg: 'user logged out successfully' });
+});
+
+//-------------------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//-------------------------------------------------------------
+
+// exports.protected = (options) =>
+// 	asyncHandler(async (req, res, next) => {
+// 		const restrictTo = options.restrictTo || [ 'USER', 'PREMIUM', 'ADMIN' ];
+
+// 		// const token = req.headers.cookie
+// 	});

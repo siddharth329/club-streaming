@@ -19,7 +19,7 @@ exports.orderByGenerator = (q, order) => {
 exports.episodeExistsFromParamId = asyncHandler(async (req, res, next) => {
 	param('id', 'invalid id').isInt();
 	const errors = validationResult(req);
-	console.log(errors);
+
 	if (!errors.isEmpty()) {
 		res.status(422).json({ errors: errors.array() });
 		return;
@@ -39,7 +39,6 @@ exports.episodeExistsFromParamId = asyncHandler(async (req, res, next) => {
 exports.modelExistsFromParamId = asyncHandler(async (req, res, next) => {
 	param('id', 'invalid id').isInt();
 	const errors = validationResult(req);
-	console.log(errors);
 	if (!errors.isEmpty()) {
 		res.status(422).json({ errors: errors.array() });
 		return;

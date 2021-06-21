@@ -118,7 +118,8 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 
 	const { id } = req.params;
 	const data = await episode.findFirst({
-		where: { id: parseInt(id) }
+		where: { id: parseInt(id) },
+		include: { models: true, tags: true }
 	});
 
 	if (!data) {
@@ -134,7 +135,6 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 
 exports.createEpisode = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
-	console.log(errors);
 	if (!errors.isEmpty()) {
 		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
@@ -148,8 +148,6 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 			select: { id: true }
 		});
 	};
-
-	// console.log(fieldPurifier(model, models));
 
 	const newEpisode = await episode.create({
 		data: {
@@ -176,7 +174,6 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 
 exports.updateEpisode = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
-	console.log(errors);
 	if (!errors.isEmpty()) {
 		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;

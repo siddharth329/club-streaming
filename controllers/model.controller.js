@@ -116,7 +116,6 @@ exports.getModel = asyncHandler(async (req, res, next) => {
 
 exports.createModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
-	console.log(errors);
 	if (!errors.isEmpty()) {
 		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
@@ -142,7 +141,7 @@ exports.createModel = asyncHandler(async (req, res, next) => {
 
 exports.updateModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
-	console.log(errors);
+
 	if (!errors.isEmpty()) {
 		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
@@ -165,7 +164,6 @@ exports.updateModel = asyncHandler(async (req, res, next) => {
 
 exports.deleteModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
-	console.log(errors);
 	if (!errors.isEmpty()) {
 		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;
