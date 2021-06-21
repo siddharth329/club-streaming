@@ -29,6 +29,13 @@ exports.validate = (method) => {
 		case 'verifyEmail': {
 			return [ query('token', 'somethings wrong with token').notEmpty().isHexadecimal() ];
 		}
+
+		case 'login': {
+			return [
+				body('email', 'invalid email value').isEmail(),
+				body('password', 'invalid password value').isString()
+			];
+		}
 	}
 };
 
@@ -164,7 +171,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 		!userData ||
 		!userData.verified ||
 		!userData.active ||
-		(await bcrypt.compare(password, userData.password))
+		!await bcrypt.compare(password, userData.password)
 	) {
 		return next(createError(401, 'invalid email or password'));
 	}
@@ -196,14 +203,3 @@ exports.logout = asyncHandler(async (req, res, next) => {
 	res.cookie('token', 'logged out', { maxAge: 10 });
 	res.status(200).json({ msg: 'user logged out successfully' });
 });
-
-//-------------------------------------------------------------
-// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-//-------------------------------------------------------------
-
-// exports.protected = (options) =>
-// 	asyncHandler(async (req, res, next) => {
-// 		const restrictTo = options.restrictTo || [ 'USER', 'PREMIUM', 'ADMIN' ];
-
-// 		// const token = req.headers.cookie
-// 	});

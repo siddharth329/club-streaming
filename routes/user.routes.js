@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const userController = require('../controllers/user.controller');
+const { signup, login, logout, verifyEmail, validate } = require('../controllers/user.controller');
 
-router.route('/signup').post(userController.validate('signup'), userController.signup);
-router.route('/verify').get(userController.validate('verifyEmail'), userController.verifyEmail);
+const { protected } = require('../utils/index');
+
+router.route('/signup').post(validate('signup'), signup);
+router.route('/verify').get(validate('verifyEmail'), verifyEmail);
+router.route('/login').get(validate('login'), login);
+router.route('/logout').get(protected(), logout);
 
 module.exports = router;

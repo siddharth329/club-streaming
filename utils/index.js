@@ -1,9 +1,10 @@
 const createError = require('http-errors');
 const asyncHandler = require('express-async-handler');
+const jwt = require('jsonwebtoken');
 const { param, validationResult } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
 
-const { episode, model } = new PrismaClient();
+const { episode, model, user } = new PrismaClient();
 
 exports.orderByGenerator = (q, order) => {
 	switch (q) {
@@ -54,3 +55,44 @@ exports.modelExistsFromParamId = asyncHandler(async (req, res, next) => {
 
 	next();
 });
+
+exports.protected = (restrictTo) =>
+	asyncHandler(async (req, res, next) => {
+		restrictTo = restrictTo || [ 'USER', 'PREMIUM', 'ADMIN' ];
+
+		const token =
+			req.headers.authorization.startsWith('Bearer') &&
+			req.headers.authorization.includes(' ')
+				? req.headers.authorization.split(' ')[1]
+				: null;
+
+		if (!token) {
+			return next(createError(401, 'unauthorized access'));
+		}
+
+		let decodedToken;
+		try {
+			decodedToken = jwt.verify(token, process.env.JWT_AUTHORIZATION_SECRET);
+		} catch (error) {
+			return next(createError(401, 'unauthorized access'));
+		}
+
+		const tokenUser = await user.findFirst({
+			where: { id: decodedToken.id, verified: true, active: true },
+			select: {
+				id: true,
+				email: true,
+				role: true,
+				isPaid: true,
+				planExpiry: true,
+				name: true
+			}
+		});
+
+		if (!restrictTo.includes(tokenUser.role)) {
+			return next(createError(401, 'A unauthorized access'));
+		}
+
+		req.user = tokenUser;
+		next();
+	});

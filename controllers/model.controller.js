@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const createError = require('http-errors');
 const { query, param, validationResult, body } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
-const { model,  } = new PrismaClient();
+const { model } = new PrismaClient();
 
 const RESULTS_PER_PAGE = 12;
 
@@ -141,7 +141,6 @@ exports.createModel = asyncHandler(async (req, res, next) => {
 
 exports.updateModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
-
 	if (!errors.isEmpty()) {
 		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 		return;

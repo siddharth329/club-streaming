@@ -8,6 +8,7 @@ const {
 	deleteEpisode,
 	updateEpisode
 } = require('../controllers/episode.controller');
+const { protected } = require('../utils/index');
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.get('/', validate('getAllEpisodes'), getAllEpisodes);
 router.get('/:id', episodeExistsFromParamId, validate('getEpisode'), getEpisode);
 
 // ADMIN ROUTES TO BE SECURED
+router.use(protected([ 'ADMIN' ]));
 router.post('/', validate('createEpisode'), createEpisode);
 router.patch('/:id', episodeExistsFromParamId, validate('updateEpisode'), updateEpisode);
 router.delete('/:id', episodeExistsFromParamId, deleteEpisode);
