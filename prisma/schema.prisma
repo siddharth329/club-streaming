@@ -42,7 +42,8 @@ model User {
   favorites   Favorite[]
   verified    Boolean  @default(false)
 
-  token       Token[]   
+  token       Token[]
+  orders      Order[]
 }
 
 // -- Actors Model
@@ -53,6 +54,7 @@ model Model {
   lastName    String
   episodes    Episode[]
   thumbnail   String  @db.VarChar(20)
+  createdAt   DateTime @default(now())
 }
 
 // -- Episode Model
@@ -97,6 +99,7 @@ model Favorite {
   user_id     Int      
   episode     Episode  @relation(fields: [episode_id], references: [id])
   episode_id  Int
+  createdAt   DateTime @default(now())
 }
 
 
@@ -112,6 +115,24 @@ model Token {
   type        TokenType
   value       String   
   expiration  DateTime
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     Int
+}
+
+enum PlanType {
+  BASIC
+  LIMITED
+}
+
+model Order {
+  @@map(name: "order")
+  id          Int      @id @default(autoincrement())
+  price       Float
+  plan        PlanType
+  paymentMethod String  
+  createdAt   DateTime @default(now())
 
   user        User     @relation(fields: [user_id], references: [id])
   user_id     Int

@@ -36,6 +36,20 @@ exports.validate = (method) => {
 				body('password', 'invalid password value').isString()
 			];
 		}
+
+		case 'requestForgotPassword': {
+			return [ body('email', 'invalid email').notEmpty().isEmail() ];
+		}
+
+		case 'forgot': {
+			return [
+				query('token', 'somethings wrong with token').notEmpty().isHexadecimal(),
+				body('password', 'password validation failed').matches(
+					/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/,
+					'i'
+				)
+			];
+		}
 	}
 };
 
@@ -137,11 +151,6 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 
 	// Send error if no token found or the token expired
 	if (!tokenData || tokenData.expiration.getTime() < new Date().getTime()) {
-		console.log(
-			tokenData.expiration.getTime(),
-			new Date().getTime(),
-			tokenData.expiration.getTime() < new Date().getTime()
-		);
 		return next(createError(400, 'Invalid token'));
 	}
 
@@ -202,4 +211,90 @@ exports.login = asyncHandler(async (req, res, next) => {
 exports.logout = asyncHandler(async (req, res, next) => {
 	res.cookie('token', 'logged out', { maxAge: 10 });
 	res.status(200).json({ msg: 'user logged out successfully' });
+});
+
+//-------------------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//-------------------------------------------------------------
+
+exports.requestForgotPassword = asyncHandler(async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+		return;
+	}
+
+	const { email } = req.body;
+
+	const generatedToken = crypto.randomBytes(32).toString();
+
+	const userData = await user.findFirst({
+		where: { email, active: true, verified: true },
+		select: { id: true, email: true }
+	});
+
+	if (userData) {
+		if (await token.findFirst({ where: { user_id: userData.id, type: 'FORGOT_PASSWORD' } }))
+			await token.update({
+				data: { value: generatedToken, expiration: new Date(Date.now() + 900000) }
+			});
+		else
+			await token.create({
+				data: {
+					type: 'FORGOT_PASSWORD',
+					value: generatedToken,
+					expiration: new Date(Date.now() + 900000), // 15 minutes (900 sec)
+					user_id: userData.id
+				}
+			});
+
+		const resetURI = `${process.env.CLIENT_URL}/api/user/forgot?token=${generatedToken}`;
+
+		await mail({
+			to: userData.email,
+			subject: 'Forgot password request at Club Streaming',
+			html: `
+					<body>
+						<h2>Verify your identity</h2>
+						<p>This email was sent to verify the forgot password request for Club Streaming from this email. Ignore the email if it was not done by you</p>
+						<a style="display: inline-block; padding: 10px 20px; background: grey;" href=${resetURI} target="_blank" rel="noopener noreferrer">Reset Password</a>
+					</body>
+				`
+		});
+	}
+
+	return res
+		.status(200)
+		.json({ msg: 'If we find your email in our recoreds, you will recieve email shortly' });
+});
+
+//-------------------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//-------------------------------------------------------------
+
+exports.forgot = asyncHandler(async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+		return;
+	}
+
+	const { token: userToken } = req.query;
+	const { password } = req.body;
+
+	const tokenData = await token.findFirst({
+		where: { value: userToken, type: 'FORGOT_PASSWORD' }
+	});
+
+	// Send error if no token found or the token expired
+	if (!tokenData || tokenData.expiration.getTime() < new Date().getTime()) {
+		return next(createError(400, 'Invalid token'));
+	}
+
+	const salt = await bcrypt.genSalt(10);
+	const hashedPassword = await bcrypt.hash(password, salt);
+
+	await user.update({ where: { id: tokenData.user_id }, data: { password: hashedPassword } });
+
+	res.status(200).json({ msg: 'password reset successfully' });
 });
