@@ -264,7 +264,7 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 *
 * @apiParam {Int} [id] Id of the episode to delete
 *
-* @apiSuccess (204) {Object} mixed `Episode` object
+* @apiSuccess (204) {Object} No Content Header
 */
 
 exports.deleteEpisode = asyncHandler(async (req, res, next) => {

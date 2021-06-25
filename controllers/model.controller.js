@@ -47,15 +47,16 @@ exports.validate = (method) => {
 //-------------------------------------------------------------
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
+
 /**
-* @api {post} /api/episode Get models
+* @api {get} /api/model Get models
 * @apiName Get all models
 * @apiPermission user, admin
 * @apiGroup User
 *
 * @apiParam  {Int}? [page] Page number of the result to return
 *
-* @apiSuccess (200) {Object} mixed `Episode` object
+* @apiSuccess (200) {Object} mixed `Model` object
 */
 exports.getAllModels = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
@@ -76,7 +77,7 @@ exports.getAllModels = asyncHandler(async (req, res, next) => {
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
 /**
-* @api {post} /api/model Get model
+* @api {get} /api/model Get model
 * @apiName Get model by ID
 * @apiPermission user, admin
 * @apiGroup User
@@ -114,6 +115,20 @@ exports.getModel = asyncHandler(async (req, res, next) => {
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
 
+/**
+* @api {post} /api/model Post models
+* @apiName Create Model
+* @apiPermission admin
+* @apiGroup User
+*
+* @apiBody  {String} [firstName] First Name of the model
+* @apiBody  {String} [lastName] Last Name of the model
+* @apiBody  {String} [info] Info about the model
+* @apiBody  {String} [thumbnail] Relative url to the thumbnail of model
+*
+* @apiSuccess (201) {Object} mixed `Model` object
+*/
+
 exports.createModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -139,6 +154,22 @@ exports.createModel = asyncHandler(async (req, res, next) => {
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
 
+/**
+* @api {patch} /api/model/:id Patch models
+* @apiName Update existing model by ID
+* @apiPermission admin
+* @apiGroup User
+*
+* @apiParam {Int} [id] ID of the model to update
+*
+* @apiBody  {String}? [firstName] First Name of the model
+* @apiBody  {String}? [lastName] Last Name of the model
+* @apiBody  {String}? [info] Info about the model
+* @apiBody  {String}? [thumbnail] Relative url to the thumbnail of model
+*
+* @apiSuccess (200) {Object} mixed `Model` object
+*/
+
 exports.updateModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -160,6 +191,17 @@ exports.updateModel = asyncHandler(async (req, res, next) => {
 //-------------------------------------------------------------
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
+
+/**
+* @api {post} /api/model Post models
+* @apiName Create Model
+* @apiPermission admin
+* @apiGroup User
+*
+* @apiParam {Int} [id] ID to model to permanantly delete from DB
+*
+* @apiSuccess (204) {Object} No Content Header
+*/
 
 exports.deleteModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
