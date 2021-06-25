@@ -33,7 +33,9 @@ exports.validate = (method) => {
 				body('thumbnail', 'episode must have a thumbnail').not().isEmpty().trim(),
 				body('duration', 'episode must have a duration').isNumeric(),
 				body('models', 'episode must have a model(s)').isArray(),
-				body('tags', 'invalid tags').optional().isArray()
+				body('tags', 'invalid tags').optional().isArray(),
+				body('series_id', 'invalid series').optional().isInt(),
+				body('published', 'invalid published value').optional().isBoolean()
 			];
 		}
 
@@ -69,7 +71,7 @@ exports.validate = (method) => {
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
 /**
-* @api {post} /api/episode Get episodes
+* @api {get} /api/episode Get episodes
 * @apiName Get all episodes
 * @apiPermission user, admin
 * @apiGroup User
@@ -102,7 +104,7 @@ exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
 /**
-* @api {post} /api/episode Get episode
+* @api {get} /api/episode/:id Get episode
 * @apiName Get episode by ID
 * @apiPermission user, admin
 * @apiGroup User
@@ -133,6 +135,24 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
 
+/**
+* @api {post} /api/episode Post episode
+* @apiName Create episode
+* @apiPermission admin
+* @apiGroup User 
+*
+* @apiBody  {String} [title] Title of the episode
+* @apiBody  {String} [info] Info about the episode
+* @apiBody  {String} [thumbnail] Thumbnail link relative to the main URL
+* @apiBody  {Int} [duration] Duration of episode in seconds
+* @apiBody  {Array[Int]} [models] ID of models in the episode
+* @apiBody  {Array[Int]} [tags] ID of tags in the episode
+* @apiBody  {Int} [series_id] ID of series associated with the episode
+* @apiBody  {Boolean} [published] Video published or not
+*
+* @apiSuccess (201) {Object} mixed `Episode` object
+*/
+
 exports.createEpisode = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -140,7 +160,17 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 		return;
 	}
 
-	let { title, info, thumbnail, preview, duration, models, tags } = req.body;
+	let {
+		title,
+		info,
+		thumbnail,
+		preview,
+		duration,
+		models,
+		tags,
+		published,
+		series_id
+	} = req.body;
 
 	const fieldPurifier = (model, field) => {
 		return model.findMany({
@@ -157,7 +187,10 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 			preview,
 			duration,
 			models: { connect: await fieldPurifier(model, models) },
-			tags: { connect: await fieldPurifier(tag, tags) }
+			tags: { connect: await fieldPurifier(tag, tags) },
+			published: published ? published : false,
+			...(published && { publishedAt: new Date(Date.now()) }),
+			...(series_id && { series_id })
 		},
 		include: {
 			tags: true,
@@ -172,6 +205,26 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
 
+/**
+* @api {patch} /api/episode/:id Patch existing episode
+* @apiName Update episode
+* @apiPermission admin
+* @apiGroup User
+*
+* @apiParam {Int} [id] Id of the episode to update
+*
+* @apiBody  {String}? [title] Title of the episode
+* @apiBody  {String}? [info] Info about the episode
+* @apiBody  {String}? [thumbnail] Thumbnail link relative to the main URL
+* @apiBody  {Int}? [duration] Duration of episode in seconds
+* @apiBody  {Array[Int]}? [models] ID of models in the episode
+* @apiBody  {Array[Int]}? [tags] ID of tags in the episode
+* @apiBody  {Int}? [series_id] ID of series associated with the episode
+* @apiBody  {Boolean}? [published] Video published or not
+*
+* @apiSuccess (200) {Object} mixed `Episode` object
+*/
+
 exports.updateEpisode = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -185,7 +238,10 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 	if (data.tags) data.models = { connect: await fieldPurifier(tag, tags) };
 
 	const updatedEpisode = await episode.update({
-		data,
+		data: {
+			...data,
+			...(data.published && !data.publishedAt && { publishedAt: new Date(Date.now()) })
+		},
 		where: { id },
 		include: {
 			models: true,
@@ -199,6 +255,17 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 //-------------------------------------------------------------
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
+
+/**
+* @api {delete} /api/episode/:id Permanently delete existing episode
+* @apiName Delete episode
+* @apiPermission admin
+* @apiGroup User
+*
+* @apiParam {Int} [id] Id of the episode to delete
+*
+* @apiSuccess (204) {Object} mixed `Episode` object
+*/
 
 exports.deleteEpisode = asyncHandler(async (req, res, next) => {
 	let { id } = req.params;
