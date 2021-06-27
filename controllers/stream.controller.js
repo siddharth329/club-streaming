@@ -39,10 +39,10 @@ exports.generateEpisodeWatchLink = asyncHandler(async (req, res, next) => {
 
 	const data = await episode.findFirst({
 		where: { id: parseInt(id) },
-		select: { video_id: true }
+		select: { video_id: true, published: true }
 	});
 
-	if (!data) {
+	if (!data || (req.user.role !== 'ADMIN' && !data.published)) {
 		return next(createError(404, 'video not found'));
 	}
 

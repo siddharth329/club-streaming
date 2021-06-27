@@ -98,6 +98,7 @@ exports.getModel = asyncHandler(async (req, res, next) => {
 		where: { id: parseInt(id) },
 		include: {
 			episodes: {
+				where: { published: true },
 				skip: (parseInt(req.query.page) - 1) * RESULTS_PER_PAGE || 0,
 				take: RESULTS_PER_PAGE
 			}
@@ -182,7 +183,7 @@ exports.updateModel = asyncHandler(async (req, res, next) => {
 
 	const updatedModel = await model.update({
 		data,
-		where: { id }
+		where: { id: parseInt(id) }
 	});
 
 	res.status(200).json(updatedModel);

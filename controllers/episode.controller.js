@@ -4,7 +4,7 @@ const { query, param, validationResult, body } = require('express-validator/chec
 const { PrismaClient } = require('@prisma/client');
 const { episode, tag, model } = new PrismaClient();
 
-const { orderByGenerator } = require('../utils/index');
+const { orderByGenerator, fieldPurifier } = require('../utils/index');
 
 // latest, favorites, views
 
@@ -28,8 +28,13 @@ exports.validate = (method) => {
 
 		case 'createEpisode': {
 			return [
-				body('title', 'episode must have a title').not().isEmpty().trim().escape(),
-				body('info', 'episode must have a info').not().isEmpty().trim(),
+				body('title', 'episode must have a title')
+					.not()
+					.isEmpty()
+					.trim()
+					.escape()
+					.isString(),
+				body('info', 'episode must have a info').not().isEmpty().trim().isString(),
 				body('thumbnail', 'episode must have a thumbnail').not().isEmpty().trim(),
 				body('duration', 'episode must have a duration').isNumeric(),
 				body('models', 'episode must have a model(s)').isArray(),
@@ -176,13 +181,6 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 		video_id
 	} = req.body;
 
-	const fieldPurifier = (model, field) => {
-		return model.findMany({
-			where: { OR: [ ...field.map((f) => ({ id: f })) ] },
-			select: { id: true }
-		});
-	};
-
 	const newEpisode = await episode.create({
 		data: {
 			title,
@@ -247,7 +245,7 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 			...data,
 			...(data.published && !data.publishedAt && { publishedAt: new Date(Date.now()) })
 		},
-		where: { id },
+		where: { id: parseInt(id) },
 		include: {
 			models: true,
 			tags: true
@@ -276,10 +274,8 @@ exports.deleteEpisode = asyncHandler(async (req, res, next) => {
 	let { id } = req.params;
 	id = parseInt(id);
 
-	const deletedEpisode = await episode.delete({
-		where: { id },
-		include: { models: true, tags: true }
-	});
+	const deletedEpisode = await episode.delete({ where: { id } });
+
 	//TODO: Deleting all favorites relation when episode gets deleted
 
 	res.status(204).json(deletedEpisode);

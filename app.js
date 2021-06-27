@@ -13,6 +13,7 @@ if (process.env.NODE_ENV === 'development') require('morgan')('combined');
 app.use('/api/user', require('./routes/user.routes'));
 app.use('/api/episode', require('./routes/episode.routes'));
 app.use('/api/model', require('./routes/model.routes'));
+app.use('/api/series', require('./routes/series.routes'));
 app.use('/api/favorite', require('./routes/favorite.routes'));
 app.use('/api/stream', require('./routes/stream.routes'));
 
