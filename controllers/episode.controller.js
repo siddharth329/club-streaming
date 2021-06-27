@@ -61,7 +61,8 @@ exports.validate = (method) => {
 				body('models', 'invalid models value').optional().isArray().contains().isInt(),
 				body('tags', 'invalid tags').optional().isArray().contains().isInt(),
 				body('published', 'invalid published value').optional().isBoolean(),
-				body('series_id', 'invalid series id').optional().isInt()
+				body('series_id', 'invalid series id').optional().isInt(),
+				body('video_id', 'invalid video id').optional().isString()
 			];
 		}
 	}
@@ -70,6 +71,7 @@ exports.validate = (method) => {
 //-------------------------------------------------------------
 // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 //-------------------------------------------------------------
+
 /**
 * @api {get} /api/episode Get episodes
 * @apiName Get all episodes
@@ -82,6 +84,7 @@ exports.validate = (method) => {
 *
 * @apiSuccess (200) {Object} mixed `Episode` object
 */
+
 exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -169,7 +172,8 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 		models,
 		tags,
 		published,
-		series_id
+		series_id,
+		video_id
 	} = req.body;
 
 	const fieldPurifier = (model, field) => {
@@ -186,6 +190,7 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 			thumbnail,
 			preview,
 			duration,
+			video_id,
 			models: { connect: await fieldPurifier(model, models) },
 			tags: { connect: await fieldPurifier(tag, tags) },
 			published: published ? published : false,

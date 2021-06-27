@@ -14,6 +14,7 @@ app.use('/api/user', require('./routes/user.routes'));
 app.use('/api/episode', require('./routes/episode.routes'));
 app.use('/api/model', require('./routes/model.routes'));
 app.use('/api/favorite', require('./routes/favorite.routes'));
+app.use('/api/stream', require('./routes/stream.routes'));
 
 app.use('*', (req, res) => res.status(404).send('Not Found'));
 

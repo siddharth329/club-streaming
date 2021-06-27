@@ -69,14 +69,17 @@ model Episode {
   preview     String   @db.VarChar(20)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
-  tags        Tag[]
-  favorites   Favorite[]
-  favCount    Int      @default(0) 
+  favCount    Int      @default(0)
   views       Int      @default(0)
-  series      Series?  @relation(fields: [series_id], references: [id])
-  series_id   Int?
   published   Boolean  @default(false)
   publishedAt DateTime?
+
+  video_id    String
+
+  tags        Tag[]
+  favorites   Favorite[]
+  series      Series?  @relation(fields: [series_id], references: [id])
+  series_id   Int?
 }
 
 // -- Series Model
@@ -136,4 +139,8 @@ model Order {
 
   user        User     @relation(fields: [user_id], references: [id])
   user_id     Int
+}
+
+enum ContentHostingType {
+  CDN_MONGO
 }

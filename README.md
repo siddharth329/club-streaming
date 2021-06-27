@@ -4,7 +4,7 @@
 ![Database](https://img.shields.io/badge/Database-MySQL-brightgreen)
 ![ORM](https://img.shields.io/badge/ORM-Prisma-blue)
 
-Club Streaming is the enhanced version of the Club69 which gives user immersive experience of streaming content directly on the website. This helps on the fly consumption of the finest hand picked scenes from the adlut industry.
+Club Streaming is the enhanced version of the Club69 which gives user immersive experience of streaming content directly on the website. This helps on the fly consumption of the finest hand picked scenes from the adult industry.
 
 <br/>
 
