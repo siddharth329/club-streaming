@@ -46,12 +46,17 @@ model User {
   orders      Order[]
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
 // -- Actors Model
 model Model {
   @@map(name: "model")
   id          Int     @id @default(autoincrement())
-  firstName   String
-  lastName    String
+  name        String
+  sex         Gender
   episodes    Episode[]
   thumbnail   String  @db.VarChar(20)
   createdAt   DateTime @default(now())

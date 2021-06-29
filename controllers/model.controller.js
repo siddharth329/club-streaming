@@ -9,7 +9,13 @@ const RESULTS_PER_PAGE = 12;
 exports.validate = (method) => {
 	switch (method) {
 		case 'getAllModels': {
-			return [ query('page', 'invalid page value').optional().isNumeric() ];
+			return [
+				query('page', 'invalid page value').optional().isNumeric(),
+				query('sex', 'invalid sex type found')
+					.optional()
+					.isString()
+					.isIn([ 'MALE', 'FEMALE' ])
+			];
 		}
 
 		case 'getModel': {
@@ -18,9 +24,10 @@ exports.validate = (method) => {
 
 		case 'createModel': {
 			return [
-				body('firstName', 'model must have a firstName').not().isEmpty().trim().escape(),
-				body('lastName', 'model must have a lastName').not().isEmpty().trim().escape(),
-				body('thumbnail', 'model must have a thumbnail').not().isEmpty().trim()
+				body('firstName', 'model must have a firstName').notEmpty().trim().escape(),
+				body('lastName', 'model must have a lastName').notEmpty().trim().escape(),
+				body('thumbnail', 'model must have a thumbnail').notEmpty().trim(),
+				body('sex', 'model must have a valid sex').notEmpty().isIn([ 'MALE', 'FEMALE' ])
 			];
 		}
 
@@ -38,7 +45,12 @@ exports.validate = (method) => {
 					.isEmpty()
 					.trim()
 					.escape(),
-				body('thumbnail', 'episode must have a thumbnail').optional().not().isEmpty().trim()
+				body('thumbnail', 'episode must have a thumbnail')
+					.optional()
+					.not()
+					.isEmpty()
+					.trim(),
+				body('sex', 'model must have a valid sex').optional().isIn([ 'MALE', 'FEMALE' ])
 			];
 		}
 	}
@@ -55,6 +67,7 @@ exports.validate = (method) => {
 * @apiGroup User
 *
 * @apiParam  {Int}? [page] Page number of the result to return
+* @apiParam  {String}? [sex] Gender of models from [MALE, FEMALE]
 *
 * @apiSuccess (200) {Object} mixed `Model` object
 */
@@ -66,6 +79,7 @@ exports.getAllModels = asyncHandler(async (req, res, next) => {
 	}
 
 	const data = await model.findMany({
+		...(req.query.sex && { where: { sex: req.query.sex } }),
 		skip: (req.query.page - 1) * RESULTS_PER_PAGE || 0,
 		take: RESULTS_PER_PAGE
 	});
@@ -126,6 +140,7 @@ exports.getModel = asyncHandler(async (req, res, next) => {
 * @apiBody  {String} [lastName] Last Name of the model
 * @apiBody  {String} [info] Info about the model
 * @apiBody  {String} [thumbnail] Relative url to the thumbnail of model
+* @apiBody  {String} [sex] Gender of model from [MALE, FEMALE]
 *
 * @apiSuccess (201) {Object} mixed `Model` object
 */
@@ -167,6 +182,7 @@ exports.createModel = asyncHandler(async (req, res, next) => {
 * @apiBody  {String}? [lastName] Last Name of the model
 * @apiBody  {String}? [info] Info about the model
 * @apiBody  {String}? [thumbnail] Relative url to the thumbnail of model
+* @apiBody  {String}? [sex] Gender of model from [MALE, FEMALE]
 *
 * @apiSuccess (200) {Object} mixed `Model` object
 */
