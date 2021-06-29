@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const createError = require('http-errors');
 const { query, param, validationResult, body } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
-const { episode, model, series } = new PrismaClient();
+const { episode, model } = new PrismaClient();
 
 exports.validate = (method) => {
 	switch (method) {
@@ -25,12 +25,6 @@ exports.getHomePageContent = asyncHandler(async (req, res, next) => {
 		take: 3
 	});
 
-	const latestSeries = await series.findMany({
-		orderBy: { createdAt: 'desc' },
-		select: { id: true, name: true, thumbnail: true },
-		take: 4
-	});
-
 	const latestModels = await model.findMany({
 		orderBy: { createdAt: 'desc' },
 		take: 5
@@ -39,7 +33,6 @@ exports.getHomePageContent = asyncHandler(async (req, res, next) => {
 	return res.status(200).json({
 		latestEpisodes,
 		mostLikedEpisodes,
-		latestSeries,
 		latestModels
 	});
 });
@@ -61,11 +54,6 @@ exports.searchTypeahead = asyncHandler(async (req, res, next) => {
 		}),
 		models: await model.findMany({
 			where: { name: { contains: q } },
-			select: { id: true, name: true, thumbnail: true },
-			take: 2
-		}),
-		series: await series.findMany({
-			where: { name: { contains: q }, info: { contains: q } },
 			select: { id: true, name: true, thumbnail: true },
 			take: 2
 		})

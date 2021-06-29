@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { param, validationResult } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
 
-const { episode, model, user, series } = new PrismaClient();
+const { episode, model, user } = new PrismaClient();
 
 exports.orderByGenerator = (q, order) => {
 	switch (q) {
@@ -58,25 +58,6 @@ exports.modelExistsFromParamId = asyncHandler(async (req, res, next) => {
 
 	if (!modelExists) {
 		return next(createError(404, 'requested model was not found'));
-	}
-
-	next();
-});
-
-exports.seriesExistsFromParamId = asyncHandler(async (req, res, next) => {
-	param('id', 'invalid id').isInt();
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array() });
-		return;
-	}
-
-	const seriesExists = await series.findUnique({
-		where: { id: parseInt(req.params.id) }
-	});
-
-	if (!seriesExists) {
-		return next(createError(404, 'requested series was not found'));
 	}
 
 	next();

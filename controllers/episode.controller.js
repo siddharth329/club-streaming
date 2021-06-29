@@ -39,7 +39,6 @@ exports.validate = (method) => {
 				body('duration', 'episode must have a duration').isNumeric(),
 				body('models', 'episode must have a model(s)').isArray(),
 				body('tags', 'invalid tags').optional().isArray(),
-				body('series_id', 'invalid series').optional().isInt(),
 				body('published', 'invalid published value').optional().isBoolean()
 			];
 		}
@@ -66,7 +65,6 @@ exports.validate = (method) => {
 				body('models', 'invalid models value').optional().isArray().contains().isInt(),
 				body('tags', 'invalid tags').optional().isArray().contains().isInt(),
 				body('published', 'invalid published value').optional().isBoolean(),
-				body('series_id', 'invalid series id').optional().isInt(),
 				body('video_id', 'invalid video id').optional().isString()
 			];
 		}
@@ -155,7 +153,6 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 * @apiBody  {Int} [duration] Duration of episode in seconds
 * @apiBody  {Array[Int]} [models] ID of models in the episode
 * @apiBody  {Array[Int]} [tags] ID of tags in the episode
-* @apiBody  {Int} [series_id] ID of series associated with the episode
 * @apiBody  {Boolean} [published] Video published or not
 *
 * @apiSuccess (201) {Object} mixed `Episode` object
@@ -168,18 +165,7 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 		return;
 	}
 
-	let {
-		title,
-		info,
-		thumbnail,
-		preview,
-		duration,
-		models,
-		tags,
-		published,
-		series_id,
-		video_id
-	} = req.body;
+	let { title, info, thumbnail, preview, duration, models, tags, published, video_id } = req.body;
 
 	const newEpisode = await episode.create({
 		data: {
@@ -192,8 +178,7 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 			models: { connect: await fieldPurifier(model, models) },
 			tags: { connect: await fieldPurifier(tag, tags) },
 			published: published ? published : false,
-			...(published && { publishedAt: new Date(Date.now()) }),
-			...(series_id && { series_id })
+			...(published && { publishedAt: new Date(Date.now()) })
 		},
 		include: {
 			tags: true,
@@ -222,7 +207,6 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 * @apiBody  {Int}? [duration] Duration of episode in seconds
 * @apiBody  {Array[Int]}? [models] ID of models in the episode
 * @apiBody  {Array[Int]}? [tags] ID of tags in the episode
-* @apiBody  {Int}? [series_id] ID of series associated with the episode
 * @apiBody  {Boolean}? [published] Video published or not
 *
 * @apiSuccess (200) {Object} mixed `Episode` object

@@ -83,21 +83,19 @@ model Episode {
 
   tags        Tag[]
   favorites   Favorite[]
-  series      Series?  @relation(fields: [series_id], references: [id])
-  series_id   Int?
 }
 
 // -- Series Model
-model Series {
-  @@map(name: "series")
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(30)
-  info        String   @db.VarChar(500)
-  thumbnail   String   @db.VarChar(20)
-  episodes    Episode[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
-}
+// model Series {
+//   @@map(name: "series")
+//   id          Int      @id @default(autoincrement())
+//   name        String   @db.VarChar(30)
+//   info        String   @db.VarChar(500)
+//   thumbnail   String   @db.VarChar(20)
+//   episodes    Episode[]
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @default(now())
+// }
 
 // -- Favorites Model
 model Favorite {
