@@ -2,12 +2,16 @@ const asyncHandler = require('express-async-handler');
 const createError = require('http-errors');
 const { query, param, validationResult, body } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
-const { episode, model } = new PrismaClient();
+const { episode, model, banners } = new PrismaClient();
 
 exports.validate = (method) => {
 	switch (method) {
 		case 'searchTypeahead': {
 			return [ query('q', 'invalid query parameter q').isString().isLength({ min: 2 }) ];
+		}
+
+		case 'requestBanner': {
+			return [ param('type').isString().isIn([ 'HOME_TOP_BANNER' ]) ];
 		}
 	}
 };
@@ -16,13 +20,13 @@ exports.getHomePageContent = asyncHandler(async (req, res, next) => {
 	const latestEpisodes = await episode.findMany({
 		orderBy: { createdAt: 'desc' },
 		include: { models: true, tags: true },
-		take: 3
+		take: 4
 	});
 
 	const mostLikedEpisodes = await episode.findMany({
 		orderBy: { favCount: 'desc' },
 		include: { models: true, tags: true },
-		take: 3
+		take: 4
 	});
 
 	const latestModels = await model.findMany({
@@ -30,11 +34,33 @@ exports.getHomePageContent = asyncHandler(async (req, res, next) => {
 		take: 5
 	});
 
-	return res.status(200).json({
-		latestEpisodes,
-		mostLikedEpisodes,
-		latestModels
+	const mostWatchedEpisodes = await episode.findMany({
+		orderBy: { views: 'desc' },
+		include: { models: true, tags: true },
+		take: 4
 	});
+
+	return res.status(200).json([
+		{
+			title: 'Latest Episodes',
+			redirect: '/videos?sortBy=latest',
+			type: 'EPISODE',
+			data: latestEpisodes
+		},
+		{
+			title: 'Top Trending Scenes',
+			redirect: '/videos?sortBy=favorite',
+			type: 'EPISODE',
+			data: mostLikedEpisodes
+		},
+		{ title: 'Latest Models', redirect: '/models', type: 'MODEL', data: latestModels },
+		{
+			title: 'Most Watched Scenes',
+			redirect: '/videos?sortBy=views',
+			type: 'EPISODE',
+			data: mostWatchedEpisodes
+		}
+	]);
 });
 
 exports.searchTypeahead = asyncHandler(async (req, res, next) => {
@@ -48,7 +74,9 @@ exports.searchTypeahead = asyncHandler(async (req, res, next) => {
 
 	const results = {
 		episodes: await episode.findMany({
-			where: { OR: [ { title: { contains: q }, info: { contains: q } } ] },
+			where: {
+				OR: [ { title: { contains: q } }, { info: { contains: q } } ]
+			},
 			select: { id: true, title: true, thumbnail: true },
 			take: 5
 		}),
@@ -60,4 +88,15 @@ exports.searchTypeahead = asyncHandler(async (req, res, next) => {
 	};
 
 	res.status(200).json(results);
+});
+
+exports.requestBanner = asyncHandler(async (req, res, next) => {
+	const { type } = req.params;
+
+	const data = await banners.findMany({
+		where: { bannerType: type },
+		select: { id: true, path: true, redirect: true }
+	});
+
+	res.status(200).json(data);
 });

@@ -58,7 +58,7 @@ model Model {
   name        String
   sex         Gender
   episodes    Episode[]
-  thumbnail   String  @db.VarChar(20)
+  thumbnail   String  @db.VarChar(100)
   createdAt   DateTime @default(now())
 }
 
@@ -70,8 +70,8 @@ model Episode {
   info        String   @db.VarChar(500)
   models      Model[]
   duration    Int
-  thumbnail   String   @db.VarChar(20)
-  preview     String   @db.VarChar(20)
+  thumbnail   String   @db.VarChar(100)
+  preview     String   @db.VarChar(100)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
   favCount    Int      @default(0)
@@ -146,4 +146,17 @@ model Order {
 
 enum ContentHostingType {
   CDN_MONGO
+}
+
+
+enum BannerType {
+  HOME_TOP_BANNER
+}
+
+model Banners {
+  @@map(name: "banners")
+  id           Int      @id @default(autoincrement())
+  path         String   
+  redirect     String
+  bannerType   BannerType
 }

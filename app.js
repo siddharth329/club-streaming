@@ -8,7 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 
-if (process.env.NODE_ENV === 'development') require('morgan')('combined');
+// if (process.env.NODE_ENV === 'development') app.use(require('morgan')('combined'));
 
 app.use('/api/user', require('./routes/user.routes'));
 app.use('/api/episode', require('./routes/episode.routes'));

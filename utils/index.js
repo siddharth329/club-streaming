@@ -71,7 +71,7 @@ exports.protected = (restrictTo) =>
 			req.headers.authorization.startsWith('Bearer') &&
 			req.headers.authorization.includes(' ')
 				? req.headers.authorization.split(' ')[1]
-				: null;
+				: req.cookies.jwt;
 
 		if (!token) {
 			return next(createError(401, 'unauthorized access'));
@@ -95,6 +95,10 @@ exports.protected = (restrictTo) =>
 				name: true
 			}
 		});
+
+		if (!tokenUser) {
+			next(createError(503, 'something went wrong'));
+		}
 
 		if (!restrictTo.includes(tokenUser.role)) {
 			return next(createError(401, 'A unauthorized access'));

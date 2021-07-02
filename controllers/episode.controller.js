@@ -97,8 +97,8 @@ exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 
 	const data = await episode.findMany({
 		orderBy: orderByGenerator(req.query.sortBy, req.query.order || 'desc'),
-		where: { published: false },
-		include: { tags: true, models: true },
+		where: { published: true },
+		include: { tags: true, models: { select: { id: true, name: true, thumbnail: true } } },
 		skip: (req.query.page - 1) * RESULTS_PER_PAGE || 0,
 		take: RESULTS_PER_PAGE
 	});

@@ -4,7 +4,7 @@
 /prisma/migrations
 
 /client
-client
+/public
 
 db
 temp
