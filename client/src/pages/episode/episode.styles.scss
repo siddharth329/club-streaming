@@ -1,0 +1,11 @@
+@import '../../sass/vars';
+@import '../../sass/mixins';
+
+.episode {
+	width: 95%;
+	margin: 0 auto;
+
+	display: grid;
+	grid-template-columns: 2.5fr 1fr;
+	grid-template-rows: max-content;
+}

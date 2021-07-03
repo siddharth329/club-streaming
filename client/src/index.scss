@@ -1,0 +1,36 @@
+@import './sass/vars';
+@import './sass/mixins';
+
+*,
+*::after,
+*::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: inherit;
+}
+
+html {
+	box-sizing: border-box;
+	font-size: 62.5%; /* 10px */
+
+	@include respond(big-desktop) {
+		font-size: 75%; //1rem = 12px, 12/16 = 75%
+	}
+	@include respond(tab-port) {
+		font-size: 60%; // 1rem = 8px, 8/16 = 50%
+	}
+}
+
+body {
+	margin: 0;
+	font-family: $body-font-family;
+	font-weight: $body-font-weight;
+	font-size: $body-font-size;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	background: $body-background-color;
+	color: $body-font-color;
+}
+
+/* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; */

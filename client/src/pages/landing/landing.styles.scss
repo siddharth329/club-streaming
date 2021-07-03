@@ -1,0 +1,29 @@
+@import '../../sass/vars';
+
+.landing {
+	&__header {
+		height: $landing-header-height;
+		background-image: url(https://transform.gammacdn.com/5mtb3zfzz1y7/7GmFnNZKDnw1kI31LYXTGo/06fc2cc8ebfb4f3d5d7662eac9028afe/PT_FT_Desktop_4thJuly_v2.jpg?width=1550&format=webp);
+		background-position: top;
+		background-size: cover;
+	}
+
+	&__header-cta {
+		text-decoration: none;
+		color: currentColor;
+		text-transform: uppercase;
+		letter-spacing: 2.4px;
+		font-size: 2.1rem;
+	}
+
+	&__promo-video {
+		text-decoration: none;
+		color: currentColor;
+		display: block;
+		width: 100%;
+
+		video {
+			width: 100%;
+		}
+	}
+}

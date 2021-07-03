@@ -1,0 +1,29 @@
+//--------------------------------------------------
+//... COLOR PRIMARY
+$color-primary: #19d0cc;
+$color-primary-dark: #15b2ae;
+$color-primary-light: lighten($color-primary, 20%);
+
+$color-secondary-light: lighten(mediumslateblue, 15);
+$color-secondary: mediumslateblue;
+$color-secondary-dark: darken(mediumslateblue, 15);
+
+$color-white: #fff;
+$color-gray-light: #d3d3d3;
+$color-gray-dark: #555;
+
+$font-family-secondary: 'Lato', sans-serif;
+
+//--------------------------------------------------
+
+$body-font-family: 'Hind', sans-serif;
+$body-font-weight: 400;
+$body-font-size: 1.6rem;
+$body-font-color: #ffffff;
+$body-background-color: #000000;
+
+$navbar-height: 6.4rem;
+$navbar-background-color: #0a0a0c;
+$navbar-padding: 0 2rem;
+
+$landing-header-height: calc(100vh - #{$navbar-height});

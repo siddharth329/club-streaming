@@ -1,0 +1,94 @@
+@import '../../sass/vars';
+
+.episodecard {
+	&__thumbnail {
+		position: relative;
+		display: inline-block;
+		width: 100%;
+		img {
+			cursor: pointer;
+			width: 100%;
+		}
+	}
+
+	&__tags {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+
+		display: flex;
+		flex-wrap: wrap;
+
+		span {
+			font-size: 1.3rem;
+			display: inline-block;
+			padding: 1px 5px;
+			border-radius: 5px;
+			background: #000;
+			color: #aaa;
+			margin-right: .7rem;
+			margin-bottom: .4rem;
+		}
+	}
+
+	&__title {
+		text-decoration: none;
+		display: block;
+		cursor: pointer;
+		text-transform: uppercase;
+		font-family: $font-family-secondary;
+		font-weight: 600;
+		letter-spacing: 1px;
+		color: $color-primary;
+	}
+
+	&__models {
+		list-style: none;
+		display: flex;
+		flex-direction: row;
+		font-size: 1.3rem;
+		font-weight: 300;
+		color: $color-gray-light;
+
+		a {
+			text-decoration: none;
+			color: currentColor;
+		}
+
+		a:not(:first-child) {
+			margin-left: 3px;
+		}
+
+		a:hover {
+			cursor: pointer;
+			color: $color-white;
+		}
+	}
+
+	&__stats {
+		font-size: 1.4rem;
+		color: $color-gray-light;
+
+		span:not(:last-child)::after {
+			content: "";
+			height: .3rem;
+			width: .3rem;
+			background-color: $color-gray-dark;
+			vertical-align: middle;
+			display: inline-block;
+			margin: 0 .5rem 0 .6rem;
+			border-radius: 50%;
+		}
+
+		span:nth-child(1) {
+			color: $color-primary-dark;
+		}
+
+		span:nth-child(3) {
+			i {
+				font-size: 1.2rem;
+				color: crimson;
+			}
+		}
+	}
+}

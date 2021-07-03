@@ -1,0 +1,66 @@
+@import '../../sass/vars';
+@import '../../sass/mixins';
+
+.footer {
+	width: 100%;
+	font-size: 1.6rem;
+
+	margin: 4rem 0;
+
+	&__wrapper {
+		width: calc(94% - 1.2rem);
+		max-width: 118rem;
+		margin: 0 auto;
+
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-rows: repeat(2, max-content);
+		grid-gap: 2.3rem;
+
+		@include respond(phone) {
+			grid-template-columns: 1fr;
+			grid-template-rows: repeat(4, max-content);
+		}
+	}
+
+	&__content {
+		font-size: 1.5rem;
+		font-weight: 300;
+
+		h3 {
+			font-size: 2rem;
+		}
+
+		p {
+			margin-top: 1.65rem;
+		}
+
+		ul {
+			margin-left: 2rem;
+			margin-top: 1.65rem;
+		}
+
+		a {
+			text-decoration: none;
+			color: $color-secondary;
+			font-size: 1.6rem;
+
+			&:hover {
+				color: $color-secondary-light;
+			}
+		}
+	}
+
+	&__copy {
+		margin: 2.5rem auto 0 auto;
+		width: 90%;
+		text-align: center;
+		font-size: 1.4rem;
+		font-weight: 300;
+		color: $color-gray-light;
+
+		@include respond(tab-port) {
+			font-size: 1.2rem;
+		}
+	}
+}

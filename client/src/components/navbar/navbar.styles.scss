@@ -1,0 +1,49 @@
+@import '../../sass/vars';
+@import '../../sass/mixins';
+
+.navbar {
+	height: $navbar-height;
+	width: 100%;
+	padding: $navbar-padding;
+	background-color: $navbar-background-color;
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+
+	a {
+		text-decoration: none;
+		color: currentColor;
+
+		display: flex;
+		align-items: center;
+	}
+
+	&__logo-link {
+		height: 80%;
+	}
+
+	&__logo {
+		height: 70%;
+		width: auto;
+		max-width: 20rem;
+
+		@include respond(tab-port) {
+			max-width: 15rem;
+		}
+	}
+
+	&__links {
+		display: flex;
+
+		& > *:not(:last-child) {
+			margin-right: 1rem;
+		}
+	}
+}

@@ -1,0 +1,22 @@
+@import '../../sass/vars';
+
+.modelcard {
+	&__thumbnail {
+		display: inline-block;
+		width: 100%;
+
+		img {
+			width: 100%;
+		}
+	}
+
+	&__title {
+		display: block;
+		text-decoration: none;
+		text-transform: uppercase;
+		font-weight: 600;
+		font-size: 1.8rem;
+		color: $color-primary;
+		letter-spacing: 1px;
+	}
+}

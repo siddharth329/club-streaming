@@ -1,0 +1,32 @@
+@import '../../sass/vars';
+
+.button {
+	display: flex;
+	align-items: center;
+	text-decoration: none;
+	text-transform: uppercase;
+	font-size: 1.6rem;
+	font-weight: 600;
+	padding: .35rem 1.3rem;
+
+	&--ghost {
+		border: 2px solid #01f4e0;
+		background-color: #000;
+		color: #fff;
+
+		&:hover {
+			color: #000;
+			background-color: #01f4e0;
+		}
+	}
+
+	&--fill {
+		color: #000 !important;
+		border: 2px solid #09c6cd;
+		background: linear-gradient(to bottom, #01f4e0, #09c6cd);
+
+		&:hover {
+			background: linear-gradient(to bottom, #09c6cd, #09c6cd);
+		}
+	}
+}
