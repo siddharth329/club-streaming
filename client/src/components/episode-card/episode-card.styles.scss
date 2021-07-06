@@ -1,10 +1,12 @@
 @import '../../sass/vars';
+@import '../../sass/mixins';
 
 .episodecard {
 	&__thumbnail {
 		position: relative;
 		display: inline-block;
 		width: 100%;
+		video,
 		img {
 			cursor: pointer;
 			width: 100%;
@@ -28,6 +30,10 @@
 			color: #aaa;
 			margin-right: .7rem;
 			margin-bottom: .4rem;
+		}
+
+		@include respond(tab-port) {
+			display: none;
 		}
 	}
 

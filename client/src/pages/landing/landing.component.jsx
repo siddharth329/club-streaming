@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import videoSrc from '../../assets/banner.mp4';
 import './landing.styles.scss';
 
 const Landing = () => {
@@ -15,9 +14,9 @@ const Landing = () => {
 					Start Watching
 				</Link>
 			</header>
-			<Link to="/join" className="landing__promo-video">
+			{/* <Link to="/join" className="landing__promo-video">
 				<video src={videoSrc} autoPlay muted playsInline loop />
-			</Link>
+			</Link> */}
 		</React.Fragment>
 	);
 };

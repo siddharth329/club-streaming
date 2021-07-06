@@ -3,9 +3,86 @@
 
 .episode {
 	width: 95%;
-	margin: 0 auto;
+	margin: 2rem auto;
 
 	display: grid;
-	grid-template-columns: 2.5fr 1fr;
+	grid-template-columns: 2.2fr 1fr;
 	grid-template-rows: max-content;
+	grid-gap: 4rem;
+
+	@include respond(tab-land) {
+		grid-template-columns: 2fr;
+		grid-template-rows: repeat(2, max-content);
+	}
+
+	&__image-overlay {
+		width: 100%;
+		overflow: hidden;
+		position: relative;
+		cursor: pointer;
+
+		i {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-size: 4rem;
+			z-index: 200;
+		}
+
+		img {
+			filter: blur(21px);
+			width: 100%;
+		}
+	}
+
+	&__recommended {
+		h2 {
+			font-family: $font-family-secondary;
+			font-weight: 700;
+			font-size: 2rem;
+			text-transform: uppercase;
+
+			margin-bottom: 1.5rem;
+
+			@include respond(tab-port) {
+				font-size: 1.8rem;
+			}
+			@include respond (phone) {
+				font-size: 1.6rem;
+			}
+
+			span {
+				font-weight: 300;
+			}
+		}
+
+		&--large {
+			display: none;
+		}
+
+		@include respond(tab-land) {
+			&--small {
+				display: none;
+			}
+			&--large {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				grid-template-rows: max-content;
+				grid-gap: 2rem;
+			}
+		}
+
+		@include respond(tab-port) {
+			&--large {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		@include respond(phone) {
+			&--large {
+				grid-template-columns: 1fr;
+			}
+		}
+	}
 }

@@ -1,10 +1,15 @@
+const crypto = require('crypto');
 const asyncHandler = require('express-async-handler');
 const createError = require('http-errors');
-const { query, param, validationResult, body } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
+const baseToPng = require('../services/baseToPng');
+const deleteFile = require('../services/deleteFile');
+const { query, param, validationResult, body } = require('express-validator/check');
+
 const { episode, tag, model } = new PrismaClient();
 
 const { orderByGenerator, fieldPurifier } = require('../utils/index');
+const path = require('path');
 
 // latest, favorites, views
 
@@ -23,7 +28,10 @@ exports.validate = (method) => {
 		}
 
 		case 'getEpisode': {
-			return [ param('id', 'id should be a numeric value').isNumeric() ];
+			return [
+				param('id', 'id should be a numeric value').isNumeric(),
+				query('recommended').optional().isBoolean()
+			];
 		}
 
 		case 'createEpisode': {
@@ -35,7 +43,7 @@ exports.validate = (method) => {
 					.escape()
 					.isString(),
 				body('info', 'episode must have a info').not().isEmpty().trim().isString(),
-				body('thumbnail', 'episode must have a thumbnail').not().isEmpty().trim(),
+				body('thumbnail', 'episode must have a thumbnail').notEmpty().isBase64(),
 				body('duration', 'episode must have a duration').isNumeric(),
 				body('models', 'episode must have a model(s)').isArray(),
 				body('tags', 'invalid tags').optional().isArray(),
@@ -52,11 +60,7 @@ exports.validate = (method) => {
 					.trim()
 					.escape(),
 				body('info', 'episode must have a info').optional().not().isEmpty().trim(),
-				body('thumbnail', 'episode must have a thumbnail')
-					.optional()
-					.not()
-					.isEmpty()
-					.trim(),
+				body('thumbnail', 'episode must have a thumbnail').optional().notEmpty().isBase64(),
 				body('duration', 'episode must have a duration')
 					.optional()
 					.isNumeric()
@@ -125,8 +129,10 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 	}
 
 	const { id } = req.params;
+	const { recommended } = req.query;
+
 	const data = await episode.findFirst({
-		where: { id: parseInt(id) },
+		where: { id: parseInt(id), published: true },
 		include: { models: true, tags: true }
 	});
 
@@ -134,7 +140,17 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 		return next(createError(404, 'requested video was not found'));
 	}
 
-	res.status(200).json(data);
+	let recommendedEpisodes;
+	if (recommended === 'true') {
+		recommendedEpisodes = await episode.findMany({
+			orderBy: { favCount: 'desc' },
+			where: { published: true },
+			include: { models: { select: { id: true, name: true } } },
+			take: 10
+		});
+	}
+
+	res.status(200).json({ episode: data, recommended: recommendedEpisodes });
 });
 
 //-------------------------------------------------------------
@@ -167,11 +183,14 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 
 	let { title, info, thumbnail, preview, duration, models, tags, published, video_id } = req.body;
 
+	const filename = `${crypto.randomBytes(18).toString('hex')}.png`;
+	baseToPng(thumbnail, filename);
+
 	const newEpisode = await episode.create({
 		data: {
 			title,
 			info,
-			thumbnail,
+			thumbnail: filename,
 			preview,
 			duration,
 			video_id,
@@ -224,10 +243,16 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 	if (data.models) data.models = { connect: await fieldPurifier(model, models) };
 	if (data.tags) data.models = { connect: await fieldPurifier(tag, tags) };
 
+	const filename = `${crypto.randomBytes(18).toString('hex')}.png`;
+	if (data.thumbnail) {
+		baseToPng(thumbnail, filename);
+	}
+
 	const updatedEpisode = await episode.update({
 		data: {
 			...data,
-			...(data.published && !data.publishedAt && { publishedAt: new Date(Date.now()) })
+			...(data.published && !data.publishedAt && { publishedAt: new Date(Date.now()) }),
+			...(data.thumbnail && { thumbnail: filename })
 		},
 		where: { id: parseInt(id) },
 		include: {
@@ -258,9 +283,9 @@ exports.deleteEpisode = asyncHandler(async (req, res, next) => {
 	let { id } = req.params;
 	id = parseInt(id);
 
+	const episodeData = await episode.findFirst({ where: { id }, select: { thumbnail: true } });
 	const deletedEpisode = await episode.delete({ where: { id } });
-
-	//TODO: Deleting all favorites relation when episode gets deleted
+	deleteFile(path.join(__dirname, 'public', 'uploads', episodeData.thumbnail));
 
 	res.status(204).json(deletedEpisode);
 });

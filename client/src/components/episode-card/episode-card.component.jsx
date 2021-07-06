@@ -5,14 +5,16 @@ import { format } from 'date-fns';
 
 import './episode-card.styles.scss';
 
-const EpisodeCard = ({ id, title, thumbnail, models, tags, favCount, publishedAt }) => {
+const EpisodeCard = ({ id, title, thumbnail, preview, models, tags, favCount, publishedAt }) => {
 	const redirectToEpisode = `/videos/${id}`;
+
+	let imageSource = '/temp/card-image-3.jpg';
 
 	return (
 		<div className="episodecard">
 			<Link to={redirectToEpisode} className="episodecard__thumbnail">
-				{/* <img src={thumbnail} alt={title} /> */}
-				<img src="https://oshi.at/ukeMqi/pDMj.jpg" alt={title} />
+				<img src={imageSource} alt={title} />
+
 				<div className="episodecard__tags">
 					{tags.slice(0, 3).map((tag) => <span key={tag.id}>{tag.name}</span>)}
 					{tags.length > 3 && <span>More ...</span>}
