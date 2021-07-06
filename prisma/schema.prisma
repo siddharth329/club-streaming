@@ -71,7 +71,7 @@ model Episode {
   models      Model[]
   duration    Int
   thumbnail   String   @db.VarChar(100)
-  preview     String   @db.VarChar(100)
+  preview     String?  @db.VarChar(100)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
   favCount    Int      @default(0)

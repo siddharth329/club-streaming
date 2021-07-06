@@ -184,7 +184,7 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 	let { title, info, thumbnail, preview, duration, models, tags, published, video_id } = req.body;
 
 	const filename = `${crypto.randomBytes(18).toString('hex')}.png`;
-	baseToPng(thumbnail, filename);
+	baseToPng(thumbnail, filename, { width: 480, height: 270 });
 
 	const newEpisode = await episode.create({
 		data: {
@@ -245,7 +245,12 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 
 	const filename = `${crypto.randomBytes(18).toString('hex')}.png`;
 	if (data.thumbnail) {
-		baseToPng(thumbnail, filename);
+		const episodeData = await episode.findFirst({
+			where: { id: parseInt(id) },
+			select: { thumbnail: true }
+		});
+		deleteFile(path.join(__dirname, '..', 'public', 'uploads', episodeData.thumbnail));
+		baseToPng(data.thumbnail, filename, { width: 480, height: 270 });
 	}
 
 	const updatedEpisode = await episode.update({
@@ -285,7 +290,7 @@ exports.deleteEpisode = asyncHandler(async (req, res, next) => {
 
 	const episodeData = await episode.findFirst({ where: { id }, select: { thumbnail: true } });
 	const deletedEpisode = await episode.delete({ where: { id } });
-	deleteFile(path.join(__dirname, 'public', 'uploads', episodeData.thumbnail));
+	deleteFile(path.join(__dirname, '..', 'public', 'uploads', episodeData.thumbnail));
 
 	res.status(204).json(deletedEpisode);
 });

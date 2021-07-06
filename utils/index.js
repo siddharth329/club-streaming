@@ -68,6 +68,7 @@ exports.protected = (restrictTo) =>
 		restrictTo = restrictTo || [ 'USER', 'PREMIUM', 'ADMIN' ];
 
 		const token =
+			req.headers.authorization &&
 			req.headers.authorization.startsWith('Bearer') &&
 			req.headers.authorization.includes(' ')
 				? req.headers.authorization.split(' ')[1]
