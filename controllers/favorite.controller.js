@@ -1,7 +1,9 @@
 const asyncHandler = require('express-async-handler');
-const createError = require('http-errors');
 const { PrismaClient } = require('@prisma/client');
 const { param, validationResult } = require('express-validator/check');
+
+const { AppError, httpStatusCodes } = require('../error/createError');
+
 const { favorite, episode } = new PrismaClient();
 
 exports.validate = () => [ param('id', 'invald parameter id').isInt() ];
@@ -24,7 +26,12 @@ exports.favoriteVideoPositive = asyncHandler(async (req, res, next) => {
 	});
 
 	if (likeExists) {
-		return next(createError(403, `already voted for episode with id: ${episodeId}`));
+		return next(
+			new AppError(
+				httpStatusCodes.FORBIDDEN,
+				`already voted for episode with id: ${episodeId}`
+			)
+		);
 	}
 
 	await favorite.create({
@@ -64,7 +71,7 @@ exports.favoriteVideoNegative = asyncHandler(async (req, res, next) => {
 	});
 
 	if (!likeExists) {
-		return next(createError(403, `something went wrong`));
+		return next(new AppError(httpStatusCodes.FORBIDDEN, `something went wrong`));
 	}
 
 	await favorite.delete({

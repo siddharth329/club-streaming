@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 import Button from '../button';
 
@@ -8,7 +9,15 @@ import './navbar.styles.scss';
 
 const Navbar = () => {
 	const { isAuthenticated, info } = useSelector((state) => state.auth);
-	console.log({ askasd: isAuthenticated });
+
+	const logout = async () => {
+		try {
+			await axios.get('/api/user/logout');
+			window.location.reload();
+		} catch (error) {
+			alert('Something went wrong');
+		}
+	};
 
 	return (
 		<div className="navbar">
@@ -24,7 +33,9 @@ const Navbar = () => {
 			<div className="navbar__links">
 				{isAuthenticated() ? (
 					<React.Fragment>
-						<div>Hi, {info.name.split(' ')[0]}!</div>
+						<div onClick={() => logout()} style={{ cursor: 'pointer' }}>
+							Hi, {info.name.split(' ')[0]}!
+						</div>
 					</React.Fragment>
 				) : (
 					<React.Fragment>

@@ -1,7 +1,4 @@
 replacing static thumbnail images to thumbnail from server in episode-card and model-card 
 :: thumbnail resolution should be 480x270
 
-implementing scroll to top on every page transition
-:: https://stackoverflow.com/questions/36904185/react-router-scroll-to-top-on-every-transition#:~:text=useEffect%20%3A%20render%20components%20%2D%3E%20paint,effect)%20%2D%3E%20paint%20to%20screen
-
 correcting all the catch blocks in the try catch of actions

@@ -1,4 +1,4 @@
-const createError = require('http-errors');
+const { AppError, httpStatusCodes } = require('../error/createError');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const { param, validationResult } = require('express-validator/check');
@@ -38,7 +38,7 @@ exports.episodeExistsFromParamId = asyncHandler(async (req, res, next) => {
 	});
 
 	if (!episodeExists) {
-		return next(createError(404, 'requested episode was not found'));
+		return next(new AppError(httpStatusCodes.NOT_FOUND, 'requested episode was not found'));
 	}
 
 	next();
@@ -57,7 +57,7 @@ exports.modelExistsFromParamId = asyncHandler(async (req, res, next) => {
 	});
 
 	if (!modelExists) {
-		return next(createError(404, 'requested model was not found'));
+		return next(new AppError(httpStatusCodes.NOT_FOUND, 'requested model was not found'));
 	}
 
 	next();
@@ -75,14 +75,14 @@ exports.protected = (restrictTo) =>
 				: req.cookies.token;
 
 		if (!token) {
-			return next(createError(401, 'unauthorized access'));
+			return next(new AppError(httpStatusCodes.UN_AUTHORIZED, 'unauthorized access'));
 		}
 
 		let decodedToken;
 		try {
 			decodedToken = jwt.verify(token, process.env.JWT_AUTHORIZATION_SECRET);
 		} catch (error) {
-			return next(createError(401, 'unauthorized access'));
+			return next(new AppError(httpStatusCodes.UN_AUTHORIZED, 'unauthorized access'));
 		}
 
 		const tokenUser = await user.findFirst({
@@ -98,11 +98,11 @@ exports.protected = (restrictTo) =>
 		});
 
 		if (!tokenUser) {
-			next(createError(503, 'something went wrong'));
+			next(new AppError(httpStatusCodes.NOT_FOUND, 'something went wrong'));
 		}
 
 		if (!restrictTo.includes(tokenUser.role)) {
-			return next(createError(401, 'A unauthorized access'));
+			return next(new AppError(httpStatusCodes.UN_AUTHORIZED, 'A unauthorized access'));
 		}
 
 		req.user = tokenUser;

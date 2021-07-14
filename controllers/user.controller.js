@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const createError = require('http-errors');
+const { AppError, httpStatusCodes } = require('../error/createError');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -82,7 +82,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
 
 	const userExists = await user.findUnique({ where: { email } });
 	if (userExists) {
-		return next(createError(403, 'user with this email already exists'));
+		return next(new AppError(httpStatusCodes.FORBIDDEN, 'user with this email already exists'));
 	}
 
 	const salt = await bcrypt.genSalt(10);
@@ -151,7 +151,7 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 
 	// Send error if no token found or the token expired
 	if (!tokenData || tokenData.expiration.getTime() < new Date().getTime()) {
-		return next(createError(400, 'Invalid token'));
+		return next(new AppError(httpStatusCodes.BAD_REQUEST, 'Invalid token'));
 	}
 
 	await user.update({ where: { id: tokenData.user_id }, data: { verified: true } });
@@ -182,7 +182,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 		!userData.active ||
 		!await bcrypt.compare(password, userData.password)
 	) {
-		return next(createError(401, 'invalid email or password'));
+		return next(new AppError(httpStatusCodes.UN_AUTHORIZED, 'invalid email or password'));
 	}
 
 	const signedToken = await jwt.sign(
@@ -288,7 +288,7 @@ exports.forgot = asyncHandler(async (req, res, next) => {
 
 	// Send error if no token found or the token expired
 	if (!tokenData || tokenData.expiration.getTime() < new Date().getTime()) {
-		return next(createError(400, 'Invalid token'));
+		return next(new AppError(httpStatusCodes.BAD_REQUEST, 'Invalid token'));
 	}
 
 	const salt = await bcrypt.genSalt(10);

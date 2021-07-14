@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const createError = require('http-errors');
+const { AppError, httpStatusCodes } = require('../error/createError');
 const jwt = require('jsonwebtoken');
 const { param, validationResult } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
@@ -43,7 +43,7 @@ exports.generateEpisodeWatchLink = asyncHandler(async (req, res, next) => {
 	});
 
 	if (!data || (req.user.role !== 'ADMIN' && !data.published)) {
-		return next(createError(404, 'video not found'));
+		return next(new AppError(httpStatusCodes.NOT_FOUND, 'video not found'));
 	}
 
 	const generatedStreamUrl = jwt.sign(

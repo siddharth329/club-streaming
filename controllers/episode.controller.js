@@ -1,8 +1,9 @@
 const crypto = require('crypto');
 const asyncHandler = require('express-async-handler');
-const createError = require('http-errors');
 const { PrismaClient } = require('@prisma/client');
 const { query, param, validationResult, body } = require('express-validator/check');
+
+const { AppError, httpStatusCodes } = require('../error/createError');
 const baseToPng = require('../services/baseToPng');
 const deleteFile = require('../services/deleteFile');
 
@@ -135,7 +136,7 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 	});
 
 	if (!data) {
-		return next(createError(404, 'requested video was not found'));
+		return next(new AppError(httpStatusCodes.NOT_FOUND, 'requested video was not found'));
 	}
 
 	let recommendedEpisodes;

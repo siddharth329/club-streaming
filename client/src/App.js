@@ -33,8 +33,8 @@ const App = () => {
 					<Route path="/home" component={Home} />
 					<Route exact path="/" component={Landing} />
 
-					<GuestRoutes path="/login" component={Login} />
-					<GuestRoutes path="/forgot-password" component={ForgotPassword} />
+					<GuestRoutes path="/login" component={<Login />} />
+					<GuestRoutes path="/forgot-password" component={<ForgotPassword />} />
 
 					{/* <ProtectedRoute path="/error" component={<Login />} /> */}
 				</Layout>

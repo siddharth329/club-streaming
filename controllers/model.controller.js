@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const createError = require('http-errors');
+const { AppError, httpStatusCodes } = require('../error/createError');
 const { query, param, validationResult, body } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
 const { model } = new PrismaClient();
@@ -120,7 +120,7 @@ exports.getModel = asyncHandler(async (req, res, next) => {
 	});
 
 	if (!data) {
-		return next(createError(404, 'requested model was not found'));
+		return next(new AppError(httpStatusCodes.NOT_FOUND, 'requested model was not found'));
 	}
 
 	res.status(200).json(data);
@@ -235,7 +235,12 @@ exports.deleteModel = asyncHandler(async (req, res, next) => {
 		select: { episodes: { select: { id: true } } }
 	});
 	if (allEpisodesId.episodes.length) {
-		return next(createError(412, 'there are episodes which cannot exists without a model'));
+		return next(
+			new AppError(
+				httpStatusCodes.BAD_REQUEST,
+				'there are episodes which cannot exists without a model'
+			)
+		);
 	}
 
 	const deletedModel = await model.delete({

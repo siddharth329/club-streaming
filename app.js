@@ -21,4 +21,6 @@ app.use('/api/', require('./routes/general.routes'));
 
 app.use('*', (req, res) => res.status(404).send('Not Found'));
 
+app.use(require('./error/handler.error'));
+
 module.exports = app;
