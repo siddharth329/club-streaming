@@ -3,7 +3,7 @@ import React from 'react';
 import Navbar from '../../components/navbar';
 import Footer from '../../components/footer';
 
-import './layout.styles.scss'
+import './layout.styles.scss';
 
 const Layout = ({ children }) => {
 	return (

@@ -2,16 +2,14 @@ const crypto = require('crypto');
 const asyncHandler = require('express-async-handler');
 const createError = require('http-errors');
 const { PrismaClient } = require('@prisma/client');
+const { query, param, validationResult, body } = require('express-validator/check');
 const baseToPng = require('../services/baseToPng');
 const deleteFile = require('../services/deleteFile');
-const { query, param, validationResult, body } = require('express-validator/check');
 
 const { episode, tag, model } = new PrismaClient();
 
 const { orderByGenerator, fieldPurifier } = require('../utils/index');
 const path = require('path');
-
-// latest, favorites, views
 
 const RESULTS_PER_PAGE = 15;
 
@@ -102,7 +100,7 @@ exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 	const data = await episode.findMany({
 		orderBy: orderByGenerator(req.query.sortBy, req.query.order || 'desc'),
 		where: { published: true },
-		include: { tags: true, models: { select: { id: true, name: true, thumbnail: true } } },
+		include: { tags: true, models: true },
 		skip: (req.query.page - 1) * RESULTS_PER_PAGE || 0,
 		take: RESULTS_PER_PAGE
 	});
@@ -144,7 +142,7 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 	if (recommended === 'true') {
 		recommendedEpisodes = await episode.findMany({
 			orderBy: { favCount: 'desc' },
-			where: { published: true },
+			where: { published: true, NOT: [ { id: parseInt(id) } ] },
 			include: { models: { select: { id: true, name: true } } },
 			take: 10
 		});

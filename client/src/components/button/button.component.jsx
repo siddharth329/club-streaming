@@ -17,7 +17,7 @@ const Button = ({ to, children, variant }) => {
 
 Button.propTypes = {
 	to: PropTypes.string.isRequired,
-	children: PropTypes.element.isRequired
+	children: PropTypes.string || PropTypes.element
 };
 
 export default Button;

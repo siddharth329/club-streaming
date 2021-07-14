@@ -9,6 +9,14 @@
 	box-sizing: inherit;
 }
 
+::selection {
+	background-color: rgba($color: $color-secondary, $alpha: .8);
+	color: white;
+}
+img::selection {
+	background-color: transparent;
+}
+
 html {
 	box-sizing: border-box;
 	font-size: 62.5%; /* 10px */

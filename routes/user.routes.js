@@ -15,9 +15,9 @@ const { protected } = require('../utils/index');
 
 router.route('/signup').post(validate('signup'), signup);
 router.route('/verify').get(validate('verifyEmail'), verifyEmail);
-router.route('/login').get(validate('login'), login);
+router.route('/login').post(validate('login'), login);
 router.route('/logout').get(protected(), logout);
-router.route('/forgotPassword').get(validate('requestForgotPassword'), requestForgotPassword);
+router.route('/forgotPassword').post(validate('requestForgotPassword'), requestForgotPassword);
 router.route('/forgot').get(validate('forgot'), forgot);
 
 module.exports = router;

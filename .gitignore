@@ -3,7 +3,6 @@
 /logs
 /prisma/migrations
 
-/client
 /public
 
 db

@@ -1,0 +1,158 @@
+@import '../../sass/vars';
+@import '../../sass/mixins';
+
+.login {
+	width: 90%;
+	max-width: 43rem;
+	margin: 5rem auto;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	a {
+		text-decoration: none;
+		color: lightgray;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	&__form {
+		padding: 2.5rem 0;
+		width: 100%;
+		border: 1.5px solid darkgray;
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	&__header {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 2rem;
+
+		h1 {
+			font-size: 1.8rem;
+			text-transform: uppercase;
+			font-weight: 300;
+			letter-spacing: 1.5px;
+			font-family: $body-font-family;
+		}
+	}
+
+	// INPUT LOGIC START HERE
+
+	&__input-container {
+		background-color: #f7f7f7;
+		height: 6rem;
+		width: 88%;
+		margin-bottom: 2rem;
+		position: relative;
+
+		display: flex;
+		align-items: center;
+	}
+
+	&__icon-box {
+		flex-basis: 6rem;
+		display: flex;
+		justify-content: center;
+
+		i {
+			display: inline-block;
+			font-size: 2rem;
+			color: gray;
+		}
+	}
+
+	&__input-wrapper {
+		flex: 0 1 70%;
+		position: relative;
+		height: 100%;
+
+		display: flex;
+		align-items: center;
+	}
+
+	&__password-visibility i {
+		position: absolute;
+		top: 3rem;
+		right: 1.5rem;
+		transform: translateY(-50%);
+		color: gray;
+		cursor: pointer;
+	}
+
+	&__label {
+		cursor: text;
+		position: absolute;
+		font-size: 1.6rem;
+		color: gray;
+		top: 2rem;
+		left: 0;
+		transition: all .2s;
+
+		&--focused {
+			@include focusedLabelStyles();
+		}
+	}
+
+	&__input {
+		height: 3rem;
+		width: 100%;
+		display: inline-block;
+		font-size: 1.6rem;
+		transform: translateY(4px);
+
+		background: none;
+		border: none;
+		outline: none;
+	}
+
+	&__input:focus + &__label {
+		@include focusedLabelStyles();
+	}
+
+	//|||||||||||||||||||||||||||
+	// INPUT LOGIN ENDS HERE
+
+	&__options {
+		width: 88%;
+		margin-bottom: 2rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		a {
+		}
+	}
+
+	&__remember {
+		display: flex;
+		align-items: center;
+	}
+
+	&__btn {
+		width: 88%;
+		display: inline-block;
+		padding: 1.5rem;
+		background: linear-gradient(to bottom, #01f4e0, #09c6cd);
+		border: none;
+		outline: none;
+		font-size: 1.5rem;
+		font-weight: 600;
+		cursor: pointer;
+
+		&:hover {
+			background: linear-gradient(to bottom, #09c6cd, #09c6cd);
+		}
+	}
+
+	&__redirect-signup {
+		font-size: 1.5rem;
+		margin: 2rem 0;
+	}
+}

@@ -265,7 +265,7 @@ exports.requestForgotPassword = asyncHandler(async (req, res, next) => {
 
 	return res
 		.status(200)
-		.json({ msg: 'If we find your email in our recoreds, you will recieve email shortly' });
+		.json({ msg: 'If we find your email in our records, you will recieve email shortly' });
 });
 
 //-------------------------------------------------------------

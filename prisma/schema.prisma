@@ -58,7 +58,7 @@ model Model {
   name        String
   sex         Gender
   episodes    Episode[]
-  thumbnail   String  @db.VarChar(100)
+  thumbnail   String
   createdAt   DateTime @default(now())
 }
 
@@ -67,11 +67,11 @@ model Episode {
   @@map(name: "episode")
   id          Int      @id @default(autoincrement())
   title       String   @db.VarChar(30) @unique
-  info        String   @db.VarChar(500)
+  info        String   @db.LongText
   models      Model[]
   duration    Int
-  thumbnail   String   @db.VarChar(100)
-  preview     String?  @db.VarChar(100)
+  thumbnail   String
+  preview     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
   favCount    Int      @default(0)

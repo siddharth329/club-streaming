@@ -1,0 +1,36 @@
+@import '../../sass/vars';
+
+.buttonslider {
+	margin: 2px 0;
+
+	&__label {
+		cursor: pointer;
+		height: 2.5rem;
+		width: 4.5rem;
+		display: flex;
+		align-items: center;
+		border-radius: 100px;
+		padding: .25rem;
+		transition: all .35s;
+		background: #c3c3c3;
+		justify-content: flex-start;
+	}
+
+	.checked {
+		background: $color-primary;
+		justify-content: flex-end;
+	}
+
+	span {
+		pointer-events: none;
+		height: 2rem;
+		width: 2rem;
+		border-radius: 50%;
+		background: #fff;
+		box-shadow: 0 1px 2px rgba($color: #000000, $alpha: .2);
+
+		&::selection {
+			background: none;
+		}
+	}
+}
