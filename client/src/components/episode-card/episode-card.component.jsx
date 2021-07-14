@@ -5,19 +5,24 @@ import { format } from 'date-fns';
 
 import './episode-card.styles.scss';
 
-const EpisodeCard = ({ id, title, thumbnail, preview, models, tags, favCount, publishedAt }) => {
-	const redirectToEpisode = `/videos/${id}`;
+const calculatedDuration = (duration) => {
+	if (duration > 3600)
+		return `${Math.floor(duration / 3600)}:${Math.floor((duration % 3600) / 60)}:${duration %
+			60}`;
+	if (duration > 60) return `00:${Math.floor(duration / 60)}:${duration % 60}`;
+	return `00:00:${duration}`;
+};
 
-	let imageSource = '/temp/card-image-3.jpg';
+const EpisodeCard = ({ id, title, thumbnail, models, favCount, publishedAt, duration }) => {
+	const redirectToEpisode = `/videos/${id}`;
 
 	return (
 		<div className="episodecard">
 			<Link to={redirectToEpisode} className="episodecard__thumbnail">
-				<img src={imageSource} alt={title} />
+				<img src={`/uploads/${thumbnail}`} alt={title} />
 
 				<div className="episodecard__tags">
-					{tags.slice(0, 3).map((tag) => <span key={tag.id}>{tag.name}</span>)}
-					{tags.length > 3 && <span>More ...</span>}
+					<span>{calculatedDuration(duration)}</span>
 				</div>
 			</Link>
 

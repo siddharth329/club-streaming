@@ -1,5 +1,5 @@
 @import '../../sass/vars';
-@import '../../sass/mixins';
+@import '../../sass/mixins/inputStyles';
 
 .emailinput {
 	@include inputStyles();

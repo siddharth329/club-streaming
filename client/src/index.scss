@@ -1,6 +1,8 @@
 @import './sass/vars';
 @import './sass/mixins';
 
+@import './sass/mixins/scrollbar';
+
 *,
 *::after,
 *::before {
@@ -8,6 +10,8 @@
 	padding: 0;
 	box-sizing: inherit;
 }
+
+@include scrollbarStyles();
 
 ::selection {
 	background-color: rgba($color: $color-secondary, $alpha: .8);

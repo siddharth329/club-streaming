@@ -15,19 +15,18 @@
 
 	&__tags {
 		position: absolute;
-		top: 1rem;
-		left: 1rem;
-
-		display: flex;
-		flex-wrap: wrap;
+		bottom: 1rem;
+		right: 0;
 
 		span {
-			font-size: 1.3rem;
+			font-family: 'Hind', sans-serif;
+			font-size: 1.1rem;
+			line-height: 1.1rem;
 			display: inline-block;
-			padding: 1px 5px;
-			border-radius: 5px;
-			background: #000;
-			color: #aaa;
+			padding: 4px;
+			border-radius: 3px;
+			background: rgba(0, 0, 0, 0.75);
+			color: #fff;
 			margin-right: .7rem;
 			margin-bottom: .4rem;
 		}

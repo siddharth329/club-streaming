@@ -188,10 +188,10 @@ exports.login = asyncHandler(async (req, res, next) => {
 	const signedToken = await jwt.sign(
 		{ userId: userData.id },
 		process.env.JWT_AUTHORIZATION_SECRET,
-		{ expiresIn: '2d' }
+		{ expiresIn: '30d' }
 	);
 
-	res.cookie('token', signedToken, { maxAge: 172800 });
+	res.cookie('token', signedToken, { maxAge: 2592000000 });
 
 	res.status(200).json({
 		id: userData.id,
@@ -297,4 +297,19 @@ exports.forgot = asyncHandler(async (req, res, next) => {
 	await user.update({ where: { id: tokenData.user_id }, data: { password: hashedPassword } });
 
 	res.status(200).json({ msg: 'password reset successfully' });
+});
+
+//-------------------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//-------------------------------------------------------------
+
+exports.getUserInfo = asyncHandler(async (req, res, next) => {
+	res.json({
+		id: req.user.id,
+		email: req.user.email,
+		name: req.user.name,
+		role: req.user.role,
+		planExpiry: req.user.planExpiry,
+		isPaid: req.user.isPaid
+	});
 });

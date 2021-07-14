@@ -8,7 +8,8 @@ const {
 	verifyEmail,
 	validate,
 	requestForgotPassword,
-	forgot
+	forgot,
+	getUserInfo
 } = require('../controllers/user.controller');
 
 const { protected } = require('../utils/index');
@@ -19,5 +20,7 @@ router.route('/login').post(validate('login'), login);
 router.route('/logout').get(protected(), logout);
 router.route('/forgotPassword').post(validate('requestForgotPassword'), requestForgotPassword);
 router.route('/forgot').get(validate('forgot'), forgot);
+
+router.route('/info').get(protected(), getUserInfo);
 
 module.exports = router;

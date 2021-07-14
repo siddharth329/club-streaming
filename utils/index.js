@@ -72,7 +72,7 @@ exports.protected = (restrictTo) =>
 			req.headers.authorization.startsWith('Bearer') &&
 			req.headers.authorization.includes(' ')
 				? req.headers.authorization.split(' ')[1]
-				: req.cookies.jwt;
+				: req.cookies.token;
 
 		if (!token) {
 			return next(createError(401, 'unauthorized access'));

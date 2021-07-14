@@ -1,0 +1,91 @@
+@import '../mixins';
+
+@mixin inputStyles {
+	&__input-container {
+		background-color: #f7f7f7;
+		height: 6rem;
+		width: 88%;
+		margin-bottom: 2rem;
+		position: relative;
+
+		display: flex;
+		align-items: center;
+
+		@include respond(phone) {
+			padding: 0 1rem;
+		}
+	}
+
+	&__icon-box {
+		flex-basis: 6rem;
+		display: flex;
+		justify-content: center;
+
+		i {
+			display: inline-block;
+			font-size: 2rem;
+			color: gray;
+		}
+
+		@include respond(phone) {
+			display: none;
+		}
+	}
+
+	&__input-wrapper {
+		flex: 0 1 70%;
+		position: relative;
+		height: 100%;
+
+		display: flex;
+		align-items: center;
+
+		@include respond(phone) {
+			flex: 0 0 88%;
+		}
+	}
+
+	&__password-visibility i {
+		position: absolute;
+		top: 3rem;
+		right: 1.5rem;
+		transform: translateY(-50%);
+		color: gray;
+		cursor: pointer;
+
+		i::before {
+			display: inline-block;
+			padding: 1rem;
+		}
+	}
+
+	&__label {
+		cursor: text;
+		position: absolute;
+		font-size: 1.6rem;
+		color: gray;
+		top: 2rem;
+		left: 0;
+		transition: all .2s;
+
+		&--focused {
+			@include focusedLabelStyles();
+		}
+	}
+
+	&__input {
+		height: 3rem;
+		width: 100%;
+		display: inline-block;
+		font-size: 1.6rem;
+		transform: translateY(4px);
+
+		background: none;
+		border: none;
+		outline: none;
+	}
+
+	&__input:focus + &__label {
+		@include focusedLabelStyles();
+	}
+}
