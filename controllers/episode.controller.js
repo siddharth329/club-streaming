@@ -3,14 +3,12 @@ const asyncHandler = require('express-async-handler');
 const { PrismaClient } = require('@prisma/client');
 const { query, param, validationResult, body } = require('express-validator/check');
 
+const { orderByGenerator, fieldPurifier } = require('../utils/index');
 const { AppError, httpStatusCodes } = require('../error/createError');
-const baseToPng = require('../services/baseToPng');
-const deleteFile = require('../services/deleteFile');
+const resizeThumbnail = require('../services/resizeThumbnail');
+const ImageKit = require('../services/ImageKit');
 
 const { episode, tag, model } = new PrismaClient();
-
-const { orderByGenerator, fieldPurifier } = require('../utils/index');
-const path = require('path');
 
 const RESULTS_PER_PAGE = 15;
 
@@ -182,14 +180,15 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 
 	let { title, info, thumbnail, preview, duration, models, tags, published, video_id } = req.body;
 
-	const filename = `${crypto.randomBytes(18).toString('hex')}.png`;
-	baseToPng(thumbnail, filename, { width: 480, height: 270 });
+	let filename = `${crypto.randomBytes(18).toString('hex')}.png`;
+	const image = await resizeThumbnail(thumbnail, { width: 480, height: 270 });
+	imageData = await ImageKit.uploadFile(image, filename);
 
 	const newEpisode = await episode.create({
 		data: {
 			title,
 			info,
-			thumbnail: filename,
+			thumbnail: imageData,
 			preview,
 			duration,
 			video_id,
@@ -242,21 +241,23 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 	if (data.models) data.models = { connect: await fieldPurifier(model, models) };
 	if (data.tags) data.models = { connect: await fieldPurifier(tag, tags) };
 
-	const filename = `${crypto.randomBytes(18).toString('hex')}.png`;
+	let imageData;
 	if (data.thumbnail) {
 		const episodeData = await episode.findFirst({
 			where: { id: parseInt(id) },
 			select: { thumbnail: true }
 		});
-		deleteFile(path.join(__dirname, '..', 'public', 'uploads', episodeData.thumbnail));
-		baseToPng(data.thumbnail, filename, { width: 480, height: 270 });
+		await ImageKit.deleteFile(episodeData.thumbnail.id);
+		const filename = `${crypto.randomBytes(18).toString('hex')}.png`;
+		const image = await resizeThumbnail(data.thumbnail, { width: 480, height: 270 });
+		imageData = await ImageKit.uploadFile(image, filename);
 	}
 
 	const updatedEpisode = await episode.update({
 		data: {
 			...data,
 			...(data.published && !data.publishedAt && { publishedAt: new Date(Date.now()) }),
-			...(data.thumbnail && { thumbnail: filename })
+			...(data.thumbnail && { thumbnail: imageData })
 		},
 		where: { id: parseInt(id) },
 		include: {
@@ -288,8 +289,8 @@ exports.deleteEpisode = asyncHandler(async (req, res, next) => {
 	id = parseInt(id);
 
 	const episodeData = await episode.findFirst({ where: { id }, select: { thumbnail: true } });
+	await ImageKit.deleteFile(episodeData.thumbnail.id);
 	const deletedEpisode = await episode.delete({ where: { id } });
-	deleteFile(path.join(__dirname, '..', 'public', 'uploads', episodeData.thumbnail));
 
 	res.status(204).json(deletedEpisode);
 });

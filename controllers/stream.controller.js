@@ -1,8 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const { AppError, httpStatusCodes } = require('../error/createError');
-const jwt = require('jsonwebtoken');
 const { param, validationResult } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
+const genSignedUrl = require('../utils/genSignedUrl');
 const { episode } = new PrismaClient();
 
 exports.validate = (method) => {
@@ -38,24 +38,25 @@ exports.generateEpisodeWatchLink = asyncHandler(async (req, res, next) => {
 	const { id } = req.params;
 
 	const data = await episode.findFirst({
-		where: { id: parseInt(id) },
-		select: { video_id: true, published: true }
+		where: { id: parseInt(id), published: true },
+		select: { video_id: true, duration: true }
 	});
 
 	if (!data || (req.user.role !== 'ADMIN' && !data.published)) {
 		return next(new AppError(httpStatusCodes.NOT_FOUND, 'video not found'));
 	}
 
-	const generatedStreamUrl = jwt.sign(
-		{ ip: req.ip, fileId: data.video_id },
-		process.env.VIDEO_LINK_GENERATOR_SECRET,
-		{ expiresIn: process.env.VIDEO_LINK_VALIDITY_DURATION }
-	);
+	const IP_ADDRESS = await (await fetch('http://ip-api.com/json')).json();
+	const signedUrl = genSignedUrl({
+		filePath: data.video_id,
+		ip: IP_ADDRESS.query,
+		expiryTimestamp: Math.floor(Date.now() / 1000 + 2 * duration)
+	});
 
 	await episode.update({
 		where: { id: parseInt(id) },
 		data: { views: { increment: 1 } }
 	});
 
-	res.status(200).send(`${process.env.CDN_STREAM_URL}?token=${generatedStreamUrl}`);
+	res.status(200).json({ signedUrl });
 });

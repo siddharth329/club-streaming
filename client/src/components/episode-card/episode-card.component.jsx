@@ -15,11 +15,13 @@ const calculatedDuration = (duration) => {
 
 const EpisodeCard = ({ id, title, thumbnail, models, favCount, publishedAt, duration }) => {
 	const redirectToEpisode = `/videos/${id}`;
+	const finalThumbnail = `${process.env
+		.REACT_APP_IMAGEKIT_URL_ENDPOINT}uploads/${thumbnail.path}`;
 
 	return (
 		<div className="episodecard">
 			<Link to={redirectToEpisode} className="episodecard__thumbnail">
-				<img src={`/uploads/${thumbnail}`} alt={title} />
+				<img src={finalThumbnail} alt={title} />
 
 				<div className="episodecard__tags">
 					<span>{calculatedDuration(duration)}</span>

@@ -26,29 +26,31 @@ const ForgotPassword = () => {
 
 	return (
 		<div className="forgotpassword">
-			<Link to="/login" className="forgotpassword__goback">
-				Go Back
-			</Link>
+			<div className="forgotpassword__wrapper">
+				<Link to="/login" className="forgotpassword__goback">
+					Go Back
+				</Link>
 
-			{loading ? (
-				<div>Loading</div>
-			) : (
-				<React.Fragment>
-					<Form onFormSubmit={onFormSubmit}>
-						<div className="forgotpassword__header">
-							<h1>
-								<strong>Forgot</strong> Password
-							</h1>
-						</div>
+				{loading ? (
+					<div>Loading</div>
+				) : (
+					<React.Fragment>
+						<Form onFormSubmit={onFormSubmit}>
+							<div className="forgotpassword__header">
+								<h1>
+									<strong>Forgot</strong> Password
+								</h1>
+							</div>
 
-						<EmailInput value={email} setValue={setEmail} />
+							<EmailInput value={email} setValue={setEmail} />
 
-						<button type="submit" className="login__btn">
-							Click here to Reset Password
-						</button>
-					</Form>
-				</React.Fragment>
-			)}
+							<button type="submit" className="login__btn">
+								Click here to Reset Password
+							</button>
+						</Form>
+					</React.Fragment>
+				)}
+			</div>
 		</div>
 	);
 };

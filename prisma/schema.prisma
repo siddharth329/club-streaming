@@ -70,7 +70,7 @@ model Episode {
   info        String   @db.LongText
   models      Model[]
   duration    Int
-  thumbnail   String
+  thumbnail   Json
   preview     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
@@ -151,6 +151,7 @@ enum ContentHostingType {
 
 enum BannerType {
   HOME_TOP_BANNER
+  CTA_OVERLAY
 }
 
 model Banners {

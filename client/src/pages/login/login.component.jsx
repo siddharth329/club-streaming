@@ -42,35 +42,37 @@ const Login = () => {
 
 	return (
 		<div className="login">
-			<Form onFormSubmit={onFormSubmit}>
-				<div className="login__header">
-					<h1>
-						Sign In to <strong>ClubX Streaming</strong>
-					</h1>
-				</div>
-
-				<EmailInput value={email} setValue={setEmail} />
-
-				<PasswordInput value={password} setValue={setPassword} />
-
-				<div className="login__options">
-					<div className="login__remember">
-						<ButtonSlider state={rememberMe} setChange={setRememberMe} />
-						<div style={{ marginLeft: '1rem' }}>Remember Me</div>
+			<div className="login__wrapper">
+				<Form onFormSubmit={onFormSubmit}>
+					<div className="login__header">
+						<h1>
+							Sign In to <strong>ClubX Streaming</strong>
+						</h1>
 					</div>
 
-					<div>
-						<Link to="/forgot-password">Forgot Password?</Link>
+					<EmailInput value={email} setValue={setEmail} />
+
+					<PasswordInput value={password} setValue={setPassword} />
+
+					<div className="login__options">
+						<div className="login__remember">
+							<ButtonSlider state={rememberMe} setChange={setRememberMe} />
+							<div style={{ marginLeft: '1rem' }}>Remember Me</div>
+						</div>
+
+						<div>
+							<Link to="/forgot-password">Forgot Password?</Link>
+						</div>
 					</div>
+
+					<button type="submit" className="login__btn">
+						Click here to Login
+					</button>
+				</Form>
+
+				<div className="login__redirect-signup">
+					Don't have an account? <Link to="/signup">SignUp Now</Link>
 				</div>
-
-				<button type="submit" className="login__btn">
-					Click here to Login
-				</button>
-			</Form>
-
-			<div className="login__redirect-signup">
-				Don't have an account? <Link to="/signup">SignUp Now</Link>
 			</div>
 		</div>
 	);

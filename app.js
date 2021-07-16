@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const cors = require('cors');
+const hpp = require('hpp');
 const app = express();
 
 app.use(cors({ credentials: true }));
@@ -9,6 +10,7 @@ app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
+app.use(hpp());
 
 // if (process.env.NODE_ENV === 'development') app.use(require('morgan')('combined'));
 
