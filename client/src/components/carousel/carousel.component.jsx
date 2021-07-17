@@ -24,7 +24,11 @@ const Carousel = (props) => {
 		>
 			{banners.map((banner) => (
 				<div key={banner.id} style={{ cursor: 'pointer' }}>
-					<img src={banner.path} alt="carousel banner" />
+					<img
+						src={`${process.env.REACT_APP_IMAGEKIT_URL_ENDPOINT}uploads/${banner.data
+							.path}`}
+						alt="carousel banner"
+					/>
 				</div>
 			))}
 		</ReactCarousel>

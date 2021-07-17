@@ -12,9 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(hpp());
 
-// if (process.env.NODE_ENV === 'development') app.use(require('morgan')('combined'));
-
-app.use('/api/user', require('./routes/user.routes'));
+app.use('/api/user', require('./routes/user.rout`es'));
 app.use('/api/episode', require('./routes/episode.routes'));
 app.use('/api/model', require('./routes/model.routes'));
 app.use('/api/favorite', require('./routes/favorite.routes'));

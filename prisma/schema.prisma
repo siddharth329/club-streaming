@@ -58,7 +58,7 @@ model Model {
   name        String
   sex         Gender
   episodes    Episode[]
-  thumbnail   String
+  thumbnail   Json
   createdAt   DateTime @default(now())
 }
 
@@ -157,7 +157,7 @@ enum BannerType {
 model Banners {
   @@map(name: "banners")
   id           Int      @id @default(autoincrement())
-  path         String   
+  data         Json
   redirect     String
   bannerType   BannerType
 }

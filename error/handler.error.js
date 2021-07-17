@@ -17,7 +17,7 @@ function sendProductionError(err, req, res) {
 		});
 	}
 
-	logger.error(err);
+	logger.error({ err, stack: err.stack });
 	return res.status(500).json({
 		errors: [
 			{
@@ -38,11 +38,11 @@ module.exports = (err, req, res, next) => {
 		err instanceof Prisma.PrismaClientRustPanicError ||
 		err instanceof Prisma.PrismaClientUnknownRequestError
 	) {
-		prismaClientInternalErrorHandler(err, res);
+		return prismaClientInternalErrorHandler(err, res);
 	}
 
 	if (err instanceof Prisma.PrismaClientKnownRequestError)
-		prismaClientKnownRequestErrorHandler(err, res);
+		return prismaClientKnownRequestErrorHandler(err, res);
 
 	return sendProductionError(error || err, req, res);
 };

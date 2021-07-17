@@ -6,12 +6,13 @@ import './rec-card.styles.scss';
 
 const RecCard = ({ id, title, thumbnail, models, publishedAt, favCount }) => {
 	const redirectToEpisode = `/videos/${id}`;
-	let imageSource = '/temp/card-image-1.jpg';
+	const finalThumbnail = `${process.env
+		.REACT_APP_IMAGEKIT_URL_ENDPOINT}uploads/${thumbnail.path}`;
 
 	return (
 		<div className="reccard">
 			<Link to={redirectToEpisode} className="reccard__thumbnail">
-				<img src={imageSource} alt={title} />
+				<img src={finalThumbnail} alt={title} />
 			</Link>
 			<div className="reccard__details">
 				<Link to={redirectToEpisode} className="reccard__title">

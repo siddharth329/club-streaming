@@ -94,7 +94,7 @@ exports.requestBanner = asyncHandler(async (req, res, next) => {
 
 	const data = await banners.findMany({
 		where: { bannerType: type },
-		select: { id: true, path: true, redirect: true }
+		select: { id: true, data: true, redirect: true }
 	});
 
 	res.status(200).json(data);

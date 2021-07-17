@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+// import { useDispatch } from 'react-redux';
 
 import Form from '../../containers/form';
 import EmailInput from '../../components/email-input';
@@ -15,13 +15,13 @@ const Login = () => {
 	const [ email, setEmail ] = useState('');
 	const [ rememberMe, setRememberMe ] = useState(true);
 
-	const [ loading, setLoading ] = useState(false);
-	const [ error, setError ] = useState([]);
+	// const [ loading, setLoading ] = useState(false);
+	// const [ error, setError ] = useState([]);
 
 	const onFormSubmit = async (event) => {
 		event.preventDefault();
-		setLoading(true);
-		setError(null);
+		// setLoading(true);
+		// setError(null);
 
 		try {
 			const { data } = await axios.post(
@@ -33,11 +33,11 @@ const Login = () => {
 			localStorage.setItem('token', data.token);
 			window.location.reload();
 		} catch (error) {
-			if (error.response) setError(error.response.errors);
-			else alert(error.message);
+			// if (error.response) setError(error.response.errors);
+			if (error.message) alert(error.message);
 		}
 
-		setLoading(false);
+		// setLoading(false);
 	};
 
 	return (

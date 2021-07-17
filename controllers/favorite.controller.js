@@ -91,3 +91,21 @@ exports.favoriteVideoNegative = asyncHandler(async (req, res, next) => {
 
 	res.status(200).json({ msg: 'you unliked the video' });
 });
+
+exports.favoriteInfo = asyncHandler(async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+		return;
+	}
+
+	const { id: userId } = req.user;
+	const { id: episodeId } = req.params;
+
+	const likedEpisode = await favorite.findFirst({
+		where: { AND: [ { user_id: userId }, { episode_id: parseInt(episodeId) } ] },
+		select: { id: true }
+	});
+
+	return res.status(200).json({ userLikedEpisode: likedEpisode ? true : false });
+});

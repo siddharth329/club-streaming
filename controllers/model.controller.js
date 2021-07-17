@@ -1,7 +1,10 @@
+const crypto = require('crypto');
 const asyncHandler = require('express-async-handler');
 const { AppError, httpStatusCodes } = require('../error/createError');
 const { query, param, validationResult, body } = require('express-validator/check');
 const { PrismaClient } = require('@prisma/client');
+const resizeThumbnail = require('../services/resizeThumbnail');
+const ImageKit = require('../services/ImageKit');
 const { model } = new PrismaClient();
 
 const RESULTS_PER_PAGE = 12;
@@ -24,32 +27,21 @@ exports.validate = (method) => {
 
 		case 'createModel': {
 			return [
-				body('firstName', 'model must have a firstName').notEmpty().trim().escape(),
-				body('lastName', 'model must have a lastName').notEmpty().trim().escape(),
-				body('thumbnail', 'model must have a thumbnail').notEmpty().trim(),
+				body('name', 'model must have a firstName').notEmpty().trim().escape(),
+				body('thumbnail', 'model must have a thumbnail').notEmpty().isBase64(),
 				body('sex', 'model must have a valid sex').notEmpty().isIn([ 'MALE', 'FEMALE' ])
 			];
 		}
 
 		case 'updateModel': {
 			return [
-				body('firstName', 'something wrong with model firstName')
+				body('name', 'something wrong with model firstName')
 					.optional()
 					.not()
 					.isEmpty()
 					.trim()
 					.escape(),
-				body('lastName', 'something wrong with model lastName')
-					.optional()
-					.not()
-					.isEmpty()
-					.trim()
-					.escape(),
-				body('thumbnail', 'episode must have a thumbnail')
-					.optional()
-					.not()
-					.isEmpty()
-					.trim(),
+				body('thumbnail', 'episode must have a thumbnail').notEmpty().isBase64(),
 				body('sex', 'model must have a valid sex').optional().isIn([ 'MALE', 'FEMALE' ])
 			];
 		}
@@ -103,8 +95,7 @@ exports.getAllModels = asyncHandler(async (req, res, next) => {
 exports.getModel = asyncHandler(async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
-		return;
+		return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
 	}
 
 	const { id } = req.params;
@@ -152,14 +143,17 @@ exports.createModel = asyncHandler(async (req, res, next) => {
 		return;
 	}
 
-	let { firstName, lastName, info, thumbnail } = req.body;
+	let { name, sex, thumbnail } = req.body;
+
+	let filename = `${crypto.randomBytes(18).toString('hex')}`;
+	const image = await resizeThumbnail(thumbnail, { width: 480, height: 640 });
+	let imageData = await ImageKit.uploadFile(image, filename);
 
 	const newModel = await model.create({
 		data: {
-			firstName,
-			lastName,
-			info,
-			thumbnail
+			name,
+			sex,
+			thumbnail: imageData
 		}
 	});
 
@@ -197,8 +191,23 @@ exports.updateModel = asyncHandler(async (req, res, next) => {
 	const { id } = req.params;
 	let data = req.body;
 
+	let imageData;
+	if (data.thumbnail) {
+		const modelData = await model.findFirst({
+			where: { id: parseInt(id) },
+			select: { thumbnail: true }
+		});
+		await ImageKit.deleteFile(modelData.thumbnail.fileId);
+		let filename = `${crypto.randomBytes(18).toString('hex')}`;
+		const image = await resizeThumbnail(thumbnail, { width: 480, height: 640 });
+		imageData = await ImageKit.uploadFile(image, filename);
+	}
+
 	const updatedModel = await model.update({
-		data,
+		data: {
+			...data,
+			...(data.thumbnail && { thumbnail: imageData })
+		},
 		where: { id: parseInt(id) }
 	});
 
@@ -230,11 +239,11 @@ exports.deleteModel = asyncHandler(async (req, res, next) => {
 	let { id } = req.params;
 	id = parseInt(id);
 
-	const allEpisodesId = await model.findFirst({
+	const modelData = await model.findFirst({
 		where: { id },
-		select: { episodes: { select: { id: true } } }
+		select: { thumbnail: true, episodes: { select: { id: true } } }
 	});
-	if (allEpisodesId.episodes.length) {
+	if (modelData.episodes.length) {
 		return next(
 			new AppError(
 				httpStatusCodes.BAD_REQUEST,
@@ -242,6 +251,8 @@ exports.deleteModel = asyncHandler(async (req, res, next) => {
 			)
 		);
 	}
+
+	await ImageKit.deleteFile(modelData.thumbnail.fileId);
 
 	const deletedModel = await model.delete({
 		where: { id },

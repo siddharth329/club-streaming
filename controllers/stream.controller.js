@@ -1,3 +1,4 @@
+const axios = require('axios');
 const asyncHandler = require('express-async-handler');
 const { AppError, httpStatusCodes } = require('../error/createError');
 const { param, validationResult } = require('express-validator/check');
@@ -46,11 +47,11 @@ exports.generateEpisodeWatchLink = asyncHandler(async (req, res, next) => {
 		return next(new AppError(httpStatusCodes.NOT_FOUND, 'video not found'));
 	}
 
-	const IP_ADDRESS = await (await fetch('http://ip-api.com/json')).json();
+	const { data: { query } } = await axios.get('http://ip-api.com/json');
 	const signedUrl = genSignedUrl({
 		filePath: data.video_id,
-		ip: IP_ADDRESS.query,
-		expiryTimestamp: Math.floor(Date.now() / 1000 + 2 * duration)
+		ip: query,
+		expiryTimestamp: Math.floor(Date.now() / 1000 + 2 * data.duration)
 	});
 
 	await episode.update({

@@ -1,0 +1,20 @@
+@import '../../sass/mixins';
+
+.player {
+	&__fake {
+		width: 100%;
+		height: 70vh;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		@include respond (tab-port) {
+			height: 50vh;
+		}
+
+		@include respond (phone) {
+			height: 40vh;
+		}
+	}
+}

@@ -8,7 +8,7 @@ const { AppError, httpStatusCodes } = require('../error/createError');
 const resizeThumbnail = require('../services/resizeThumbnail');
 const ImageKit = require('../services/ImageKit');
 
-const { episode, tag, model } = new PrismaClient();
+const { episode, tag, model, favorite } = new PrismaClient();
 
 const RESULTS_PER_PAGE = 15;
 
@@ -147,7 +147,10 @@ exports.getEpisode = asyncHandler(async (req, res, next) => {
 		});
 	}
 
-	res.status(200).json({ episode: data, recommended: recommendedEpisodes });
+	res.status(200).json({
+		episode: data,
+		recommended: recommendedEpisodes
+	});
 });
 
 //-------------------------------------------------------------
@@ -180,9 +183,9 @@ exports.createEpisode = asyncHandler(async (req, res, next) => {
 
 	let { title, info, thumbnail, preview, duration, models, tags, published, video_id } = req.body;
 
-	let filename = `${crypto.randomBytes(18).toString('hex')}.png`;
+	let filename = `${crypto.randomBytes(18).toString('hex')}`;
 	const image = await resizeThumbnail(thumbnail, { width: 480, height: 270 });
-	imageData = await ImageKit.uploadFile(image, filename);
+	let imageData = await ImageKit.uploadFile(image, filename);
 
 	const newEpisode = await episode.create({
 		data: {
@@ -247,8 +250,8 @@ exports.updateEpisode = asyncHandler(async (req, res, next) => {
 			where: { id: parseInt(id) },
 			select: { thumbnail: true }
 		});
-		await ImageKit.deleteFile(episodeData.thumbnail.id);
-		const filename = `${crypto.randomBytes(18).toString('hex')}.png`;
+		await ImageKit.deleteFile(episodeData.thumbnail.fileId);
+		const filename = `${crypto.randomBytes(18).toString('hex')}`;
 		const image = await resizeThumbnail(data.thumbnail, { width: 480, height: 270 });
 		imageData = await ImageKit.uploadFile(image, filename);
 	}
@@ -289,7 +292,7 @@ exports.deleteEpisode = asyncHandler(async (req, res, next) => {
 	id = parseInt(id);
 
 	const episodeData = await episode.findFirst({ where: { id }, select: { thumbnail: true } });
-	await ImageKit.deleteFile(episodeData.thumbnail.id);
+	await ImageKit.deleteFile(episodeData.thumbnail.fileId);
 	const deletedEpisode = await episode.delete({ where: { id } });
 
 	res.status(204).json(deletedEpisode);

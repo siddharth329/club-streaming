@@ -3,7 +3,8 @@ const router = express.Router();
 const {
 	favoriteVideoPositive,
 	favoriteVideoNegative,
-	validate
+	validate,
+	favoriteInfo
 } = require('../controllers/favorite.controller');
 const { episodeExistsFromParamId, protected } = require('../utils/index');
 
@@ -11,5 +12,6 @@ const { episodeExistsFromParamId, protected } = require('../utils/index');
 router.use(protected([ 'ADMIN', 'PREMIUM' ]));
 router.get('/like/:id', episodeExistsFromParamId, validate(), favoriteVideoPositive);
 router.get('/dislike/:id', episodeExistsFromParamId, validate(), favoriteVideoNegative);
+router.get('/info/:id', protected([ 'PREMIUM', 'ADMIN' ]), favoriteInfo);
 
 module.exports = router;

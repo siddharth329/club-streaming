@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.use(protected([ 'ADMIN', 'PREMIUM' ]));
 
-router.get('/', validate('generateEpisodeWatchLink'), generateEpisodeWatchLink);
+router.get('/:id', validate('generateEpisodeWatchLink'), generateEpisodeWatchLink);
 
 module.exports = router;
