@@ -7,6 +7,7 @@ import axios from 'axios';
 import Player from '../../components/player';
 import RecCard from '../../components/rec-card';
 import EpisodeCard from '../../components/episode-card';
+import Favorite from '../../components/favorite/favorite.component';
 
 import './episode.styles.scss';
 
@@ -50,10 +51,11 @@ class Episode extends React.Component {
 	render() {
 		const { data, loading, error } = this.state;
 
-		let episode, recommended;
+		let episode, recommended, userLikedEpisode;
 		if (data) {
 			episode = data.episode;
 			recommended = data.recommended;
+			userLikedEpisode = data.userLikedEpisode || null;
 		}
 
 		return (
@@ -83,7 +85,13 @@ class Episode extends React.Component {
 									</div>
 								</div>
 
-								<div className="episode__favorite" />
+								<div className="episode__favorite">
+									<Favorite
+										episodeId={episode.id}
+										liked={userLikedEpisode}
+										favCount={episode.favCount}
+									/>
+								</div>
 							</div>
 
 							<p>{episode.info}</p>
@@ -123,6 +131,18 @@ class Episode extends React.Component {
 								Club X | <span>Recommended Videos</span>
 							</h2>
 							<div className="episode__recommended--small">
+								{recommended.map((episode) => (
+									<RecCard key={episode.id} {...episode} />
+								))}
+								{recommended.map((episode) => (
+									<RecCard key={episode.id} {...episode} />
+								))}
+								{recommended.map((episode) => (
+									<RecCard key={episode.id} {...episode} />
+								))}
+								{recommended.map((episode) => (
+									<RecCard key={episode.id} {...episode} />
+								))}
 								{recommended.map((episode) => (
 									<RecCard key={episode.id} {...episode} />
 								))}
