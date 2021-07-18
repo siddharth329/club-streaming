@@ -2,3 +2,5 @@ replacing static thumbnail images to thumbnail from server in episode-card and m
 :: thumbnail resolution should be 480x270
 
 correcting all the catch blocks in the try catch of actions
+
+Adding Link to in tags of categories in the episode page component

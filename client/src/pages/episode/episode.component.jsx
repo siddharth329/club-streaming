@@ -8,6 +8,7 @@ import Player from '../../components/player';
 import RecCard from '../../components/rec-card';
 import EpisodeCard from '../../components/episode-card';
 import Favorite from '../../components/favorite/favorite.component';
+import ModelCard from '../../components/model-card';
 
 import './episode.styles.scss';
 
@@ -68,13 +69,13 @@ class Episode extends React.Component {
 				{episode && (
 					<div className="episode">
 						<div className="episode__wrapper">
-							<Player episodeId={episode.id} />
+							<Player episodeId={episode.id} image={episode.thumbnail.path} />
 
 							<div className="episode__head">
 								<div className="episode__description">
 									<h1 className="episode__title">{episode.title}</h1>
-									<div>
-										<span>ClubXStream</span>
+									<div className="episode__misc">
+										<span>ClubX Streaming</span>
 										<span>
 											{format(new Date(episode.publishedAt), 'dd-MM-yyyy')}
 										</span>
@@ -94,12 +95,10 @@ class Episode extends React.Component {
 								</div>
 							</div>
 
-							<p>{episode.info}</p>
-
 							{episode.models && (
 								<div className="episode__models">
-									<h2>Cast</h2>
-									<div>
+									<h2>Featuring</h2>
+									{/* <div>
 										{episode.models.map((model) => (
 											<Link
 												key={model.id}
@@ -110,9 +109,19 @@ class Episode extends React.Component {
 												<span>{model.name}</span>
 											</Link>
 										))}
+									</div> */}
+									<div className="episode__models-grid">
+										{episode.models.map((model) => (
+											<ModelCard key={model.id} {...model} />
+										))}
 									</div>
 								</div>
 							)}
+
+							<div className="episode__info">
+								<h2>Description</h2>
+								<div>{episode.info}</div>
+							</div>
 
 							{episode.tags && (
 								<div className="episode__categories">

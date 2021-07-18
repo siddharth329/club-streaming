@@ -20,12 +20,16 @@ class Player extends React.Component {
 	};
 
 	render() {
+		const finalThumbnailUrl = `${process.env.REACT_APP_IMAGEKIT_URL_ENDPOINT}uploads/${this
+			.props.image}`;
+
 		return (
 			<div className="player">
 				<ReactJWPlayer
 					playerId="my-unique-id-secret-nahi0bataunga"
 					playerScript="https://cdn.jwplayer.com/libraries/BssAMo9Z.js"
 					file={this.state.streamUrl ? this.state.streamUrl : null}
+					image={finalThumbnailUrl}
 				/>
 			</div>
 		);

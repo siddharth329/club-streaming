@@ -5,7 +5,8 @@ $color-primary-dark: #15b2ae;
 $color-primary-light: lighten($color-primary, 20%);
 
 $color-secondary-light: lighten(mediumslateblue, 15);
-$color-secondary: mediumslateblue;
+$color-secondary: rgb(125, 143, 187);
+// $color-secondary: mediumslateblue;
 $color-secondary-dark: darken(mediumslateblue, 15);
 
 $color-white: #fff;

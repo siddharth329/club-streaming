@@ -1,6 +1,12 @@
 @import '../../sass/vars';
 @import '../../sass/mixins';
 
+@mixin subheaderStyles {
+	font-size: 2rem;
+	text-transform: uppercase;
+	letter-spacing: .6px;
+}
+
 .episode {
 	width: 95%;
 	margin: 2rem auto;
@@ -20,9 +26,34 @@
 		justify-content: space-between;
 		align-items: center;
 		margin-top: 2.5rem;
-		margin-bottom: 1.5rem;
-		padding-bottom: 1rem;
+		margin-bottom: 3.2rem;
+		padding-bottom: .7rem;
 		border-bottom: 1px solid #333;
+	}
+
+	&__description {
+		h1 {
+			line-height: 2.8rem;
+			font-size: 2.5rem;
+		}
+	}
+
+	&__misc {
+		span {
+			&:not(:last-child) {
+				margin-right: 1.5rem;
+			}
+
+			&:nth-child(1) {
+				color: $color-primary;
+			}
+
+			&:nth-child(3) {
+				i {
+					margin-right: .5rem;
+				}
+			}
+		}
 	}
 
 	&__favorite {
@@ -30,6 +61,71 @@
 		align-items: center;
 		margin-right: 1rem;
 	}
+
+	&__models {
+		h2 {
+			@include subheaderStyles();
+			margin-bottom: 1rem;
+		}
+	}
+
+	&__models-grid {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		grid-template-rows: max-content;
+		grid-gap: 1.5rem;
+
+		@include respond(tab-port) {
+			grid-template-columns: repeat(4, 1fr);
+		}
+
+		@include respond(740px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		@include respond(phone) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	&__info {
+		margin-top: 2rem;
+		margin-bottom: 3rem;
+		h2 {
+			@include subheaderStyles();
+			margin-bottom: .3rem;
+		}
+
+		div {
+			color: rgb(113, 113, 113);
+		}
+	}
+
+	&__categories {
+		h2 {
+			@include subheaderStyles();
+			margin-bottom: .3rem;
+		}
+
+		div {
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		a {
+			text-decoration: none;
+			color: #000;
+			display: inline-block;
+			padding: .15rem .5rem;
+			background: $color-secondary;
+			margin-right: 1rem;
+			margin-bottom: 1.2rem;
+		}
+	}
+
+	//||||||||||||||||||||||||||||||||||||||||||||||||||
+	// RECOMMENDED VIDEOS STYLES
+	//||||||||||||||||||||||||||||||||||||||||||||||||||
 
 	&__recommended {
 		h2 {
