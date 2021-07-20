@@ -1,0 +1,102 @@
+@import '../../sass/vars';
+@import '../../sass/mixins';
+
+.episodecatalog {
+	margin: 2rem auto;
+	width: 97%;
+	max-width: 190rem;
+
+	@include respond(tab-land) {
+		width: 95%;
+	}
+
+	&__filter {
+		list-style: none;
+		display: flex;
+		justify-content: flex-end;
+		text-transform: uppercase;
+
+		@include respond (phone) {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			grid-template-rows: max-content;
+			grid-gap: .4rem;
+			cursor: default;
+		}
+
+		li {
+			font-size: 1.5rem;
+			display: inline-block;
+			padding: .4rem .8rem .1rem .8rem;
+			background-color: $color-secondary;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: black;
+			cursor: pointer;
+			font-weight: 600;
+
+			&.selected {
+				background-color: $color-secondary-dark;
+				pointer-events: none;
+
+				@include respond(phone) {
+					background: transparent;
+					color: $color-secondary;
+				}
+			}
+
+			&.disabled {
+				background: rgba(125, 143, 187, .6);
+				&:hover {
+					cursor: not-allowed;
+					background-color: rgba(125, 143, 187, .6);
+				}
+			}
+
+			a {
+				text-decoration: none;
+				color: currentColor;
+			}
+
+			@include respond(phone) {
+				border: 1px solid $color-secondary;
+				border-bottom: 3px solid $color-secondary;
+				padding: 1rem 0;
+				margin-right: 0 !important;
+				font-size: 1.65rem;
+				font-weight: 300;
+				font-family: 'Hind', sans-serif;
+			}
+		}
+
+		li:hover {
+			background-color: $color-secondary-dark;
+		}
+
+		li:not(:last-child) {
+			margin-right: 2rem;
+		}
+	}
+
+	&__episodes {
+		margin: 2.5rem 0;
+
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		grid-template-rows: max-content;
+		grid-gap: 1.5rem;
+
+		@include respond(1300px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		@include respond(1000px) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		@include respond(phone) {
+			grid-template-columns: 1fr;
+		}
+	}
+}

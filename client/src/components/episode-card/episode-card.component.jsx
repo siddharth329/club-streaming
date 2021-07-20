@@ -13,7 +13,16 @@ const calculatedDuration = (duration) => {
 	return `00:00:${duration}`;
 };
 
-const EpisodeCard = ({ id, title, thumbnail, models, favCount, publishedAt, duration }) => {
+const EpisodeCard = ({
+	id,
+	title,
+	thumbnail,
+	models,
+	favCount,
+	publishedAt,
+	duration,
+	variant
+}) => {
 	const redirectToEpisode = `/videos/${id}`;
 	const finalThumbnail = `${process.env
 		.REACT_APP_IMAGEKIT_URL_ENDPOINT}uploads/${thumbnail.path}`;
@@ -29,7 +38,11 @@ const EpisodeCard = ({ id, title, thumbnail, models, favCount, publishedAt, dura
 			</Link>
 
 			<div className="episodecard__details">
-				<Link to={redirectToEpisode} className="episodecard__title">
+				<Link
+					to={redirectToEpisode}
+					className="episodecard__title"
+					style={{ ...(variant === 'catalog' && { fontSize: '1.45rem' }) }}
+				>
 					{title}
 				</Link>
 				<ul className="episodecard__models">

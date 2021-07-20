@@ -8,7 +8,7 @@ const { AppError, httpStatusCodes } = require('../error/createError');
 const resizeThumbnail = require('../services/resizeThumbnail');
 const ImageKit = require('../services/ImageKit');
 
-const { episode, tag, model, favorite } = new PrismaClient();
+const { episode, tag, model } = new PrismaClient();
 
 const RESULTS_PER_PAGE = 15;
 
@@ -96,6 +96,11 @@ exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 		return;
 	}
 
+	const aggResult = await episode.aggregate({
+		where: { published: true },
+		_count: { _all: true }
+	});
+
 	const data = await episode.findMany({
 		orderBy: orderByGenerator(req.query.sortBy, req.query.order || 'desc'),
 		where: { published: true },
@@ -104,7 +109,12 @@ exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 		take: RESULTS_PER_PAGE
 	});
 
-	res.status(200).json(data);
+	res.status(200).json({
+		results: aggResult._count._all,
+		totalPages: Math.ceil(aggResult._count._all / RESULTS_PER_PAGE),
+		currentPage: req.query.page || 1,
+		episodes: data
+	});
 });
 
 //-------------------------------------------------------------

@@ -41,7 +41,7 @@ const Favorite = ({ episodeId, liked, favCount }) => {
 						checked={!isAuthenticated() ? true : episodeLiked}
 						disabled={!isAuthenticated()}
 					/>
-					<label for="checkbox">
+					<label htmlFor="checkbox">
 						<FavoriteSVG />
 					</label>
 				</div>

@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
 
 import { homeReducer } from './home/home.reducers';
-import { episodeReducer } from './episode/episode.reducers';
+import { episodeCatalogReducer } from './episode-catalog/episode-catalog.reducers';
 import { authReducer } from './auth/auth.reducers';
 
 const reducers = combineReducers({
 	home: homeReducer,
-	episodes: episodeReducer,
+	episodeCatalog: episodeCatalogReducer,
 	auth: authReducer
 });
 

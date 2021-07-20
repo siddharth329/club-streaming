@@ -8,7 +8,7 @@ const { episode, model, user } = new PrismaClient();
 
 exports.orderByGenerator = (q, order) => {
 	switch (q) {
-		case 'favourites':
+		case 'favorite':
 			return { favCount: order };
 		case 'views':
 			return { views: order };

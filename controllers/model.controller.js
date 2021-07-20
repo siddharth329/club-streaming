@@ -5,9 +5,10 @@ const { query, param, validationResult, body } = require('express-validator/chec
 const { PrismaClient } = require('@prisma/client');
 const resizeThumbnail = require('../services/resizeThumbnail');
 const ImageKit = require('../services/ImageKit');
-const { model } = new PrismaClient();
+const { model, episode } = new PrismaClient();
 
 const RESULTS_PER_PAGE = 12;
+const EPISODE_RESULTS_PER_PAGE = 8;
 
 exports.validate = (method) => {
 	switch (method) {
@@ -70,13 +71,22 @@ exports.getAllModels = asyncHandler(async (req, res, next) => {
 		return;
 	}
 
+	const aggResult = await model.aggregate({
+		_count: { _all: true }
+	});
+
 	const data = await model.findMany({
 		...(req.query.sex && { where: { sex: req.query.sex } }),
 		skip: (req.query.page - 1) * RESULTS_PER_PAGE || 0,
 		take: RESULTS_PER_PAGE
 	});
 
-	res.status(200).json(data);
+	res.status(200).json({
+		results: aggResult._count._all,
+		totalPages: Math.ceil(aggResult._count._all / RESULTS_PER_PAGE),
+		currentPage: req.query.page || 1,
+		data
+	});
 });
 
 //-------------------------------------------------------------
@@ -104,8 +114,8 @@ exports.getModel = asyncHandler(async (req, res, next) => {
 		include: {
 			episodes: {
 				where: { published: true },
-				skip: (parseInt(req.query.page) - 1) * RESULTS_PER_PAGE || 0,
-				take: RESULTS_PER_PAGE
+				skip: (parseInt(req.query.page) - 1) * EPISODE_RESULTS_PER_PAGE || 0,
+				take: EPISODE_RESULTS_PER_PAGE
 			}
 		}
 	});
@@ -114,7 +124,16 @@ exports.getModel = asyncHandler(async (req, res, next) => {
 		return next(new AppError(httpStatusCodes.NOT_FOUND, 'requested model was not found'));
 	}
 
-	res.status(200).json(data);
+	const aggResult = await episode.count({
+		where: { models: { some: { id: parseInt(id) } } }
+	});
+
+	res.status(200).json({
+		...data,
+		totalEpisodes: aggResult,
+		currentEpisodePage: parseInt(req.query.page) || 1,
+		totalEpisodePages: Math.ceil(aggResult / EPISODE_RESULTS_PER_PAGE)
+	});
 });
 
 //-------------------------------------------------------------

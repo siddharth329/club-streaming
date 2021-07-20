@@ -37,10 +37,13 @@
 			display: inline-block;
 			text-decoration: none;
 			text-transform: uppercase;
-			color: $color-secondary;
+			background-color: $color-secondary;
+			color: #000;
+			padding: 0.45rem 0.65rem 0.2rem 0.65rem;
 			font-size: 1.4rem;
+			font-weight: 600;
 			&:hover {
-				color: $color-secondary-light;
+				background-color: $color-secondary-dark;
 			}
 		}
 	}
@@ -55,13 +58,15 @@
 			grid-gap: 1.2rem;
 
 			@include respond(tab-land) {
-				grid-template-columns: repeat(2, 1fr);
-				grid-template-rows: repeat(2, max-content);
+				grid-template-columns: repeat(3, 1fr);
 			}
 
-			@include respond(phone) {
+			@include respond(1000px) {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			@include respond(700px) {
 				grid-template-columns: 1fr;
-				grid-template-rows: repeat(4, max-content);
 			}
 		}
 
@@ -72,13 +77,15 @@
 			grid-gap: 1.2rem;
 
 			@include respond(tab-land) {
-				grid-template-columns: repeat(3, 1fr);
-				grid-template-rows: repeat(2, max-content);
+				grid-template-columns: repeat(4, 1fr);
 			}
 
 			@include respond(tab-port) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			@include respond(phone) {
 				grid-template-columns: repeat(2, 1fr);
-				grid-template-rows: repeat(3, max-content);
 			}
 		}
 	}

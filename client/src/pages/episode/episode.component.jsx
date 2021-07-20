@@ -98,18 +98,6 @@ class Episode extends React.Component {
 							{episode.models && (
 								<div className="episode__models">
 									<h2>Featuring</h2>
-									{/* <div>
-										{episode.models.map((model) => (
-											<Link
-												key={model.id}
-												to={`/models/${model.id}`}
-												className="episode__model"
-											>
-												<img src={model.thumbnail} alt={model.name} />
-												<span>{model.name}</span>
-											</Link>
-										))}
-									</div> */}
 									<div className="episode__models-grid">
 										{episode.models.map((model) => (
 											<ModelCard key={model.id} {...model} />
