@@ -1,0 +1,22 @@
+@import '../../sass/mixins';
+
+.episodegenerator {
+	margin: 2.5rem 0;
+
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-rows: max-content;
+	grid-gap: 1.5rem;
+
+	@include respond(1300px) {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	@include respond(1000px) {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	@include respond(phone) {
+		grid-template-columns: 1fr;
+	}
+}

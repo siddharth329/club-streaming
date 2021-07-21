@@ -1,0 +1,25 @@
+@import '../../sass/vars';
+
+.paginator {
+	width: 100%;
+	margin: 4rem 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	&__page {
+		text-decoration: none;
+		color: #000;
+		display: inline-block;
+		padding: .35rem .5rem;
+		background-color: $color-secondary;
+		margin: 2px;
+		min-width: 30px;
+		text-align: center;
+
+		&.current {
+			background-color: $color-secondary-dark;
+			pointer-events: none;
+		}
+	}
+}

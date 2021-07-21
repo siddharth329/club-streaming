@@ -11,13 +11,13 @@ const RecCard = ({ id, title, thumbnail, models, publishedAt, favCount }) => {
 
 	return (
 		<div className="reccard">
-			<Link to={redirectToEpisode} className="reccard__thumbnail">
+			<a href={redirectToEpisode} className="reccard__thumbnail">
 				<img src={finalThumbnail} alt={title} />
-			</Link>
+			</a>
 			<div className="reccard__details">
-				<Link to={redirectToEpisode} className="reccard__title">
+				<a href={redirectToEpisode} className="reccard__title">
 					{title}
-				</Link>
+				</a>
 				<ul className="reccard__models">
 					{models.map((model, index) => (
 						<React.Fragment key={index}>

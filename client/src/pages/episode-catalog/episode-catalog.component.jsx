@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { fetchEpisodeCatalog } from '../../store/episode-catalog/episode-catalog.actions';
-import EpisodeCard from '../../components/episode-card';
+import EpisodeGenerator from '../../containers/episode-generator';
+import Paginator from '../../components/paginator';
 
 import './episode-catalog.styles.scss';
 
@@ -14,6 +15,21 @@ const queryGenerator = (params) => {
 	};
 };
 
+const headingGenerator = (query) => {
+	switch (query) {
+		case 'latest':
+			return 'Latest Episodes';
+		case 'views':
+			return 'Most Viewed Episodes';
+		case 'favorite':
+			return 'Most Viewed Episodes';
+		case 'comming-soon':
+			return 'Upcoming Episodes';
+
+		default:
+			break;
+	}
+};
 const LoadingErrorContent = ({ loading, error, loadingData, errorData, children }) =>
 	loading ? loadingData : error ? errorData : children;
 
@@ -37,6 +53,10 @@ const EpisodeCatalog = () => {
 			errorData={<div />}
 		>
 			<div className="episodecatalog">
+				<h2>{headingGenerator(currentParam)}</h2>
+				{data && (
+					<div className="episodecatalog__numresults">{data.results} RESULTS FOUND</div>
+				)}
 
 				<div className="episodecatalog__content">
 					<ul className="episodecatalog__filter">
@@ -50,25 +70,18 @@ const EpisodeCatalog = () => {
 							<Link to="/videos?sortBy=views">Most Watched</Link>
 						</li>
 						<li className={`${currentParam === 'coming-soon' && 'selected'} span3`}>
-							<Link>Coming Soon</Link>
+							<Link to="/videos?sortBy=coming-soon">Coming Soon</Link>
 						</li>
 					</ul>
 
 					{data && (
-						<div className="episodecatalog__episodes">
-							{data.episodes.map((episode) => (
-								<EpisodeCard key={episode.id} {...episode} variant="catalog" />
-							))}
-							{data.episodes.map((episode) => (
-								<EpisodeCard key={episode.id} {...episode} variant="catalog" />
-							))}
-							{data.episodes.map((episode) => (
-								<EpisodeCard key={episode.id} {...episode} variant="catalog" />
-							))}
-							{data.episodes.map((episode) => (
-								<EpisodeCard key={episode.id} {...episode} variant="catalog" />
-							))}
-						</div>
+						<React.Fragment>
+							<EpisodeGenerator episodes={data.episodes} />
+							<Paginator
+								currentPage={data.currentPage}
+								totalPages={data.totalPages}
+							/>
+						</React.Fragment>
 					)}
 				</div>
 			</div>

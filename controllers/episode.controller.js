@@ -100,19 +100,21 @@ exports.getAllEpisodes = asyncHandler(async (req, res, next) => {
 		where: { published: true },
 		_count: { _all: true }
 	});
+	const totalPages = Math.ceil(aggResult._count._all / RESULTS_PER_PAGE);
+	const currentPage = req.query.page > totalPages ? 1 : req.query.page;
 
 	const data = await episode.findMany({
 		orderBy: orderByGenerator(req.query.sortBy, req.query.order || 'desc'),
 		where: { published: true },
 		include: { tags: true, models: true },
-		skip: (req.query.page - 1) * RESULTS_PER_PAGE || 0,
+		skip: (currentPage - 1) * RESULTS_PER_PAGE || 0,
 		take: RESULTS_PER_PAGE
 	});
 
 	res.status(200).json({
 		results: aggResult._count._all,
-		totalPages: Math.ceil(aggResult._count._all / RESULTS_PER_PAGE),
-		currentPage: req.query.page || 1,
+		totalPages: totalPages,
+		currentPage: currentPage,
 		episodes: data
 	});
 });

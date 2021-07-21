@@ -13,6 +13,17 @@ const calculatedDuration = (duration) => {
 	return `00:00:${duration}`;
 };
 
+const LinkFromVariant = ({ variant, children, className, link }) =>
+	variant === 'recommended' ? (
+		<a className={className} href={link}>
+			{children}
+		</a>
+	) : (
+		<Link to={link} className={className}>
+			{children}
+		</Link>
+	);
+
 const EpisodeCard = ({
 	id,
 	title,
@@ -29,22 +40,27 @@ const EpisodeCard = ({
 
 	return (
 		<div className="episodecard">
-			<Link to={redirectToEpisode} className="episodecard__thumbnail">
+			<LinkFromVariant
+				variant={variant}
+				link={redirectToEpisode}
+				className="episodecard__thumbnail"
+			>
 				<img src={finalThumbnail} alt={title} />
 
 				<div className="episodecard__tags">
 					<span>{calculatedDuration(duration)}</span>
 				</div>
-			</Link>
+			</LinkFromVariant>
 
 			<div className="episodecard__details">
-				<Link
-					to={redirectToEpisode}
+				<LinkFromVariant
+					link={redirectToEpisode}
 					className="episodecard__title"
-					style={{ ...(variant === 'catalog' && { fontSize: '1.45rem' }) }}
+					variant={variant}
 				>
 					{title}
-				</Link>
+				</LinkFromVariant>
+
 				<ul className="episodecard__models">
 					{models.map((model, index) => (
 						<React.Fragment key={index}>

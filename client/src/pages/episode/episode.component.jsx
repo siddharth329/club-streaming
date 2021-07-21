@@ -116,7 +116,9 @@ class Episode extends React.Component {
 									<h2>Categories</h2>
 									<div>
 										{episode.tags.map((tag) => (
-											<Link key={tag.id}>{tag.name}</Link>
+											<Link to={`/categories/${tag.id}`} key={tag.id}>
+												{tag.name}
+											</Link>
 										))}
 									</div>
 								</div>
@@ -131,22 +133,15 @@ class Episode extends React.Component {
 								{recommended.map((episode) => (
 									<RecCard key={episode.id} {...episode} />
 								))}
-								{recommended.map((episode) => (
-									<RecCard key={episode.id} {...episode} />
-								))}
-								{recommended.map((episode) => (
-									<RecCard key={episode.id} {...episode} />
-								))}
-								{recommended.map((episode) => (
-									<RecCard key={episode.id} {...episode} />
-								))}
-								{recommended.map((episode) => (
-									<RecCard key={episode.id} {...episode} />
-								))}
 							</div>
 							<div className="episode__recommended--large">
 								{recommended.map((episode) => (
-									<EpisodeCard key={episode.id} {...episode} tags={[]} />
+									<EpisodeCard
+										key={episode.id}
+										{...episode}
+										tags={[]}
+										variant="recommended"
+									/>
 								))}
 							</div>
 						</div>
